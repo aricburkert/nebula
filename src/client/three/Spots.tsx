@@ -4,6 +4,11 @@ import { Html, useCursor } from "@react-three/drei";
 import * as THREE from "three";
 import { SPACES, SPACE_LABEL, spotPoint } from "./coords";
 
+// Hit areas are never drawn (the raycaster still finds hidden meshes), so they share one geometry and material.
+const HIT_GEO = new THREE.CircleGeometry(1.5, 24);
+const HIT_MAT = new THREE.MeshBasicMaterial();
+const HIT_AT = new Map(SPACES.map((s) => [s.id, spotPoint(s.id).setY(spotPoint(s.id).y + 0.02)]));
+
 /** Invisible hit areas over every space: hover for the space's rule, tap to pick it when a card asks. */
 export function Spots({ pickable, onPick, traps }: { pickable?: string[]; onPick?: (s: string) => void; traps: { space: string; title: string }[] }) {
   const [hover, setHover] = useState<string | null>(null);
@@ -14,8 +19,11 @@ export function Spots({ pickable, onPick, traps }: { pickable?: string[]; onPick
       {SPACES.map((s) => (
         <mesh
           key={s.id}
-          position={spotPoint(s.id).setY(spotPoint(s.id).y + 0.02)}
+          position={HIT_AT.get(s.id)}
           rotation-x={-Math.PI / 2}
+          geometry={HIT_GEO}
+          material={HIT_MAT}
+          visible={false}
           onPointerOver={(e) => (e.stopPropagation(), setHover(s.id))}
           onPointerOut={() => setHover((h) => (h === s.id ? null : h))}
           onClick={(e) => {
@@ -23,10 +31,7 @@ export function Spots({ pickable, onPick, traps }: { pickable?: string[]; onPick
             e.stopPropagation();
             onPick?.(s.id);
           }}
-        >
-          <circleGeometry args={[1.5, 24]} />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-        </mesh>
+        />
       ))}
       {[...pick].map((id) => (
         <PickGlow key={id} space={id} hot={hover === id} />

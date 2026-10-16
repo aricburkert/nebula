@@ -1,12 +1,16 @@
-import { useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useEffect, useMemo, useState } from "react";
+import { useThree } from "@react-three/fiber";
 import { Sparkles, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import type { Quality } from "./quality";
 
-/** Deep space around the board: a slowly churning nebula, stars, and drifting sparkles. */
+/**
+ * Deep space around the board: a nebula, stars, and drifting sparkles. The nebula's noise is far too costly
+ * to run for every pixel every frame, so it is painted once into a cube map and the sky just looks that up.
+ */
 export function Sky({ quality }: { quality: Quality }) {
-  const mat = useMemo(
+  const { gl } = useThree();
+  const paint = useMemo(
     () =>
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
@@ -42,12 +46,37 @@ export function Sky({ quality }: { quality: Quality }) {
       }),
     [],
   );
-  useFrame((_, dt) => (mat.uniforms.uTime.value += dt));
+  const [cube, setCube] = useState<THREE.CubeTexture | null>(null);
+  useEffect(() => {
+    const size = quality === "high" ? 1024 : 512;
+    const rt = new THREE.WebGLCubeRenderTarget(size, { type: THREE.HalfFloatType, generateMipmaps: false });
+    const scene = new THREE.Scene();
+    const sphere = new THREE.SphereGeometry(300, 48, 24);
+    scene.add(new THREE.Mesh(sphere, paint));
+    new THREE.CubeCamera(1, 1000, rt).update(gl, scene);
+    sphere.dispose();
+    setCube(rt.texture);
+    return () => rt.dispose();
+  }, [gl, paint, quality]);
+  const mat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        depthWrite: false,
+        uniforms: { uSky: { value: null } },
+        vertexShader: `varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `varying vec3 vDir; uniform samplerCube uSky; void main(){ gl_FragColor = vec4(textureCube(uSky, normalize(vDir)).rgb, 1.0); }`,
+      }),
+    [],
+  );
+  mat.uniforms.uSky.value = cube;
   return (
     <>
-      <mesh material={mat} renderOrder={-10}>
-        <sphereGeometry args={[300, 48, 24]} />
-      </mesh>
+      {cube && (
+        <mesh material={mat} renderOrder={-10}>
+          <sphereGeometry args={[300, 48, 24]} />
+        </mesh>
+      )}
       <Stars radius={180} depth={80} count={quality === "high" ? 6000 : 2500} factor={5} saturation={0.6} fade speed={0.6} />
       <Sparkles count={quality === "high" ? 160 : 60} scale={[70, 18, 45]} position={[0, 4, 0]} size={4} speed={0.25} color="#d9b8ff" opacity={0.7} />
     </>

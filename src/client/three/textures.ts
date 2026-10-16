@@ -20,9 +20,21 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
 
 let maxAnisotropy = 8;
 let maxSize = 4096;
-export function setGpuLimits(renderer: THREE.WebGLRenderer) {
-  maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
-  maxSize = renderer.capabilities.maxTextureSize;
+let renderer: THREE.WebGLRenderer | null = null;
+export function setGpuLimits(r: THREE.WebGLRenderer) {
+  renderer = r;
+  maxAnisotropy = r.capabilities.getMaxAnisotropy();
+  maxSize = r.capabilities.maxTextureSize;
+}
+
+/** Sends a texture to the GPU now, while nothing is animating, rather than on the frame it first shows up. */
+function upload(tex: THREE.Texture) {
+  try {
+    renderer?.initTexture(tex);
+  } catch {
+    // not fatal: it uploads on first use instead
+  }
+  return tex;
 }
 
 function finish(tex: THREE.Texture) {
@@ -49,10 +61,19 @@ function cached(key: string, make: () => Promise<THREE.Texture>) {
   return p;
 }
 
-/** The flat printed board at the widest size this GPU and quality allow. */
+/** The flat printed board at the widest size this GPU and quality allow. Only the latest one is kept. */
+let boardKey: string | null = null;
 export function boardTexture(url: string, width: number): Promise<THREE.Texture> {
   const w = Math.min(width, maxSize);
-  return cached(`board:${url}:${w}`, async () => {
+  const key = `board:${url}:${w}`;
+  if (boardKey && boardKey !== key) {
+    // A different board or quality: free the old one (around 100 MB of GPU memory at the top size).
+    const old = textureCache.get(boardKey);
+    textureCache.delete(boardKey);
+    old?.then((t) => t.dispose());
+  }
+  boardKey = key;
+  return cached(key, async () => {
     const img = await loadImage(url);
     const h = Math.round((w * img.naturalHeight) / img.naturalWidth || (w * 2775) / 5475);
     const c = canvas(w, h);
@@ -60,7 +81,7 @@ export function boardTexture(url: string, width: number): Promise<THREE.Texture>
     const tex = new THREE.CanvasTexture(c);
     tex.generateMipmaps = true;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
-    return finish(tex);
+    return upload(finish(tex));
   });
 }
 
@@ -265,14 +286,35 @@ export function cardBack(deck: "A" | "B"): THREE.Texture {
   return tex;
 }
 
-/** A card face, not cached: cards come and go, so the caller disposes it. */
-export async function cardFace(url: string): Promise<THREE.Texture> {
-  const img = await loadImage(url);
-  const k = Math.min(1, 1024 / Math.max(img.naturalWidth, img.naturalHeight));
-  const c = canvas(img.naturalWidth * k, img.naturalHeight * k);
-  const ctx = c.getContext("2d")!;
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, c.width, c.height);
-  ctx.drawImage(img, 0, 0, c.width, c.height);
-  return finish(new THREE.CanvasTexture(c));
+/**
+ * A card face, from the small WebP copy of the card (scripts/card-images.mjs). It is decoded off the main
+ * thread and uploaded as soon as it arrives, so drawing a card doesn't stall a frame. The last few are kept.
+ */
+const faces = new Map<number, Promise<THREE.Texture>>();
+const FACES_KEPT = 6;
+export function cardFace(id: number): Promise<THREE.Texture> {
+  const hit = faces.get(id);
+  if (hit) {
+    faces.delete(id);
+    faces.set(id, hit);
+    return hit;
+  }
+  const p = (async () => {
+    const blob = await (await fetch(`/assets/cards/webp/${id}.webp`)).blob();
+    const bmp = await createImageBitmap(blob, { imageOrientation: "flipY" });
+    const tex = new THREE.Texture(bmp);
+    tex.flipY = false;
+    return upload(finish(tex));
+  })();
+  faces.set(id, p);
+  p.catch(() => faces.delete(id));
+  while (faces.size > FACES_KEPT) {
+    const [oldId, old] = faces.entries().next().value!;
+    faces.delete(oldId);
+    old.then((t) => {
+      t.dispose();
+      (t.image as ImageBitmap).close?.();
+    }, () => {});
+  }
+  return p;
 }

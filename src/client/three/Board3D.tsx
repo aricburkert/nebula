@@ -172,10 +172,10 @@ function Star({ d, box, phase }: { d: string; box: number[]; phase: number }) {
   });
   return (
     <group ref={ref} position={base}>
+      {/* Glows by itself (and through the bloom) rather than with a point light, which every lit pixel would pay for. */}
       <mesh geometry={g} castShadow scale={1.35}>
-        <meshStandardMaterial color="#ffc21a" emissive="#ff9a00" emissiveIntensity={0.5} metalness={0.25} roughness={0.3} />
+        <meshStandardMaterial color="#ffc21a" emissive="#ff9a00" emissiveIntensity={0.85} metalness={0.25} roughness={0.3} />
       </mesh>
-      <pointLight color="#ffcc33" intensity={2.5} distance={3} decay={2} />
     </group>
   );
 }

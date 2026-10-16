@@ -20,6 +20,8 @@ export function cardAlt(id: number): string {
 }
 
 export const cardSrc = (id: number) => `/assets/cards/${id}.svg`;
+/** A 640 px WebP of the card (scripts/card-images.mjs): much cheaper to show than the SVG, sharp enough below full size. */
+export const cardImage = (id: number) => `/assets/cards/webp/${id}.webp`;
 
 export const SPINNER = spinner.segments as { action: string; text: string; color: string | string[] }[];
 

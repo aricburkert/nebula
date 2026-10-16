@@ -115,7 +115,7 @@ function Pawn({ info, index, order, director, lobby }: { info: PawnInfo; index: 
   const tag = useRef<THREE.Sprite>(null);
   const [hover, setHover] = useState(false);
   useCursor(hover);
-  const st = useRef({ pos: new THREE.Vector3(), hop: -1, evId: -1, landed: false, squash: 0, born: -1 });
+  const st = useRef({ pos: new THREE.Vector3(), hop: -1, evId: -1, landed: false, squash: 0, born: -1, walkFor: -1, walk: [] as THREE.Vector3[] });
 
   const nameTex = useMemo(() => glyph(info.name, { size: 64, font: `bold 44px "Luckiest Guy", "Roboto", sans-serif`, color: "#ffffff" }), [info.name]);
   const zTex = useMemo(() => glyph("💤", { size: 96 }), []);
@@ -169,7 +169,11 @@ function Pawn({ info, index, order, director, lobby }: { info: PawnInfo; index: 
         if (m.how === "nebula") sfx.nebula();
       }
       if (m.how === "walk") {
-        const pts = walkPoints(m.from, m.to, m.path ?? []);
+        if (s.walkFor !== moving.id) {
+          s.walkFor = moving.id;
+          s.walk = walkPoints(m.from, m.to, m.path ?? []);
+        }
+        const pts = s.walk;
         const hops = pts.length - 1;
         if (hops <= 0) {
           // Blocked (the Grappling Hook): a little frustrated hop in place.
