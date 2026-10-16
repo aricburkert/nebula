@@ -4,7 +4,7 @@ import type { ChatMessage, RoomInfo } from "../shared/protocol";
 import { CARD_PAUSE, isCardPause } from "../engine/types";
 import { Board } from "./Board";
 import { PromptPanel } from "./PromptPanel";
-import { CARD_TEXT, PASSIVE_HINT, SPINNER, cardAlt, cardSrc, cardTitle } from "./cards";
+import { CARD_TEXT, PASSIVE_HINT, SPINNER, cardAlt, cardImage, cardSrc, cardTitle } from "./cards";
 import type { RoomConnection } from "./useRoom";
 import { WorldLayer } from "./WorldLayer";
 import { Director, useDirector, type DirectorSnapshot } from "./three/director";
@@ -36,6 +36,13 @@ export function GameScreen({ conn, room, game }: Props) {
     return () => clearInterval(t);
   }, [director, settings.gl]);
   const snap = useDirector(director);
+  // Fetch the drawn card's image as soon as the server says what it is, before the reveal needs it.
+  const activeCard = game.active?.card;
+  useEffect(() => {
+    if (activeCard === undefined) return;
+    const img = new Image();
+    img.src = cardImage(activeCard);
+  }, [activeCard]);
 
   const pawns = useMemo(
     () =>
@@ -341,7 +348,7 @@ function CardReveal({
     <div className={`reveal ${phase} ${fromDeck ? "landed" : ""} ${holding ? "holding" : ""}`} onClick={() => !mine && setPhase("out")}>
       <div className="reveal-card" key={card.id}>
         <div className="reveal-face reveal-front">
-          <img src={cardSrc(card.card)} alt={cardAlt(card.card)} />
+          <img src={cardImage(card.card)} alt={cardAlt(card.card)} />
         </div>
         <div className={`reveal-face reveal-back deck-${card.deck}`}>
           <span>{card.deck}</span>
@@ -379,7 +386,7 @@ function ActiveCard({ game, names }: { game: GameView; names: Map<string, string
         <div className="small">
           {names.get(active.player)}'s {active.deck === "A" ? "Action" : "Bonus"} card
         </div>
-        <img src={cardSrc(active.card)} alt={cardAlt(active.card)} />
+        <img src={cardImage(active.card)} alt={cardAlt(active.card)} />
       </button>
       {big && (
         <div className="card-zoom" onClick={() => setBig(false)}>

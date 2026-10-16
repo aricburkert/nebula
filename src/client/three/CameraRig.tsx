@@ -33,7 +33,16 @@ export function CameraRig({
   const introAt = useRef(-1);
   const clock = useRef(0);
 
+  // The overview only depends on the screen shape; it's asked for every idle frame, so work it out once.
+  const poseCache = useRef<{ key: string; pose: { pos: THREE.Vector3; target: THREE.Vector3 } } | null>(null);
   const overviewPose = () => {
+    const cam = camera as THREE.PerspectiveCamera;
+    const key = `${size.width}x${size.height}:${cam.fov}`;
+    if (poseCache.current?.key !== key) poseCache.current = { key, pose: computeOverview() };
+    const p = poseCache.current.pose;
+    return { pos: p.pos.clone(), target: p.target.clone() };
+  };
+  const computeOverview = () => {
     const cam = camera as THREE.PerspectiveCamera;
     const aspect = size.width / size.height;
     const portrait = aspect < 1;

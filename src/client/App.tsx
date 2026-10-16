@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Lobby } from "./Lobby";
 import { GameScreen } from "./GameScreen";
 import { useRoom } from "./useRoom";
-import { WorldLayer } from "./WorldLayer";
+import { WorldHost, WorldLayer } from "./WorldLayer";
 
 function roomFromPath(): string | null {
   const m = location.pathname.match(/^\/r\/([A-Za-z0-9]{5})\/?$/);
@@ -20,7 +20,12 @@ export function App() {
     history.pushState(null, "", `/r/${c}`);
     setCode(c);
   };
-  return code ? <Room code={code} /> : <Home onGo={go} />;
+  return (
+    <>
+      <WorldHost />
+      {code ? <Room code={code} /> : <Home onGo={go} />}
+    </>
+  );
 }
 
 function Home({ onGo }: { onGo: (code: string) => void }) {

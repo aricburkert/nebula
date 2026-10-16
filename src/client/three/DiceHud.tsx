@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Hud, PerspectiveCamera, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
@@ -21,6 +21,7 @@ export function DiceHud({ director, snap, pawnOf, priority }: { director: Direct
       <ambientLight intensity={1.2} />
       <directionalLight position={[3, 6, 8]} intensity={1.6} />
       <directionalLight position={[-6, -2, 4]} intensity={0.5} color="#c9a0ff" />
+      <Warmup />
       {snap.roll && <Dice key={snap.roll.id} roll={snap.roll} director={director} color={pawnColor(pawnOf(snap.roll.player))} />}
       {snap.spin && <Spinner key={snap.spin.id} spin={snap.spin} director={director} />}
     </Hud>
@@ -28,6 +29,42 @@ export function DiceHud({ director, snap, pawnOf, priority }: { director: Direct
 }
 
 const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
+
+const PIPS = ["#5b1fb0", "#1a1030"];
+
+/**
+ * Gets the first roll and spin ready while nothing is happening: draws the die faces, rasterizes the spinner
+ * and has the GPU compile the HUD's shaders (a speck nobody can see, for a moment), instead of all of that
+ * landing on the frame the dice appear.
+ */
+function Warmup() {
+  const theme = useTheme();
+  const { gl } = useThree();
+  const tex = useAsset(() => imageTexture(theme.spinner, theme.spinnerScale), `spinner:${theme.id}`);
+  const [done, setDone] = useState(false);
+  const mats = useMemo(() => {
+    const faces = PIPS.flatMap((c) => [1, 2, 3, 4, 5, 6].map((v) => dieFace(v, c)));
+    for (const f of faces) gl.initTexture(f);
+    return [new THREE.MeshStandardMaterial({ map: faces[0], roughness: 0.3 }), new THREE.MeshStandardMaterial({ roughness: 0.4 })];
+  }, [gl]);
+  useEffect(() => {
+    if (!tex) return;
+    gl.initTexture(tex);
+    const t = setTimeout(() => setDone(true), 1500);
+    return () => clearTimeout(t);
+  }, [gl, tex]);
+  if (done) return null;
+  return (
+    <group position={[0, 0, 0]} scale={0.001}>
+      <mesh material={mats[0]} frustumCulled={false}>
+        <boxGeometry />
+      </mesh>
+      <mesh material={mats[1]} frustumCulled={false}>
+        <boxGeometry />
+      </mesh>
+    </group>
+  );
+}
 
 function useLayout() {
   const { size } = useThree();
@@ -58,6 +95,8 @@ function Dice({ roll, director, color }: { roll: NonNullable<DirectorSnapshot["r
   );
   // A real box (six material groups, +z toward the camera); drei's RoundedBox only has caps and sides.
   const geo = useMemo(() => new RoundedBoxGeometry(size, size, size, 4, size * 0.16), [size]);
+  useEffect(() => () => geo.dispose(), [geo]);
+  useEffect(() => () => dice.forEach((d) => d.mats.forEach((m) => m.dispose())), [dice]);
   const refs = useRef<(THREE.Group | null)[]>([]);
   const hit = useRef(0);
   useEffect(() => sfx.diceShake(), []);

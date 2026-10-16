@@ -35,6 +35,12 @@ PLAYWRIGHT_CHROMIUM=/path/to/chrome node scripts/board-art.mjs deep-space "Deep 
 
 It writes the flat board (`public/assets/board3d/flat.svg`), one SVG per standee (`public/assets/board3d/pieces/`), and `src/client/three/boardArt.json` (piece positions plus the track, river, star and shield outlines). The Deep Space run writes the same under `public/assets/board3d/deep-space/` and `boardArt-deep-space.json`, plus `public/assets/board/deep-space.jpg` (the 2D board) and `public/assets/spinner/deep-space.jpg`. Its source SVGs (130 MB, mostly an embedded starfield photo) aren't kept in the repo.
 
+The game shows cards from small WebP copies (`public/assets/cards/webp/`), which load much faster than the SVGs. Rerun this if a card SVG changes:
+
+```sh
+PLAYWRIGHT_CHROMIUM=/path/to/chrome node scripts/card-images.mjs
+```
+
 The host picks Standard or Deep Space in the lobby. Both boards have the same spaces and rules; each has its own six pawns (every Deep Space pawn is a twin of a Standard one, so switching boards swaps everyone to their twin).
 
 The settings menu in a game switches 3D quality (High adds bloom and sharper textures), the auto camera, and sound.

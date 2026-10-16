@@ -40,7 +40,10 @@ class Pool {
   drag = new Float32Array(MAX);
   kind = new Float32Array(MAX);
   next = 0;
+  /** Color, size and kind only change when a burst starts, so they're only re-sent to the GPU then. */
+  dirty = false;
   private c = new THREE.Color();
+  private zero = new THREE.Vector3();
 
   burst(o: BurstOpts) {
     const n = o.count ?? 20;
@@ -49,7 +52,8 @@ class Pool {
     const [l0, l1] = o.life ?? [0.5, 1];
     const [z0, z1] = o.size ?? [0.15, 0.35];
     const spread = o.spread ?? 1;
-    const dir = o.dir ?? new THREE.Vector3();
+    const dir = o.dir ?? this.zero;
+    this.dirty = true;
     for (let k = 0; k < n; k++) {
       const i = this.next;
       this.next = (this.next + 1) % MAX;
@@ -196,7 +200,11 @@ export function Particles() {
     const before = ref.current;
     ref.current = alive;
     if (alive === 0 && before === 0) return;
-    for (const k of ["position", "color", "size", "kind"]) (geo.getAttribute(k) as THREE.BufferAttribute).needsUpdate = true;
+    (geo.getAttribute("position") as THREE.BufferAttribute).needsUpdate = true;
+    if (fx.dirty) {
+      fx.dirty = false;
+      for (const k of ["color", "size", "kind"]) (geo.getAttribute(k) as THREE.BufferAttribute).needsUpdate = true;
+    }
     fadeGlow.needsUpdate = true;
     fadeSolid.needsUpdate = true;
   });

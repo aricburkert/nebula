@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -42,9 +42,11 @@ export default function World(props: WorldProps) {
     <Canvas
       className="world-canvas"
       shadows={{ type: THREE.PCFShadowMap }}
-      dpr={quality === "high" ? [1, 2] : [1, 1.25]}
+      // Retina at 2x plus bloom is four times the pixels for little visible gain; 1.5x keeps edges crisp.
+      dpr={quality === "high" ? [1, 1.5] : [1, 1.25]}
       flat
-      gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
+      // On high, the effect composer does its own anti-aliasing, so the canvas doesn't need to.
+      gl={{ antialias: quality !== "high", powerPreference: "high-performance", alpha: false }}
       camera={{ fov: 38, position: [0, 40, 38], near: 0.5, far: 700 }}
       onCreated={({ gl }) => setGpuLimits(gl)}
     >
@@ -53,21 +55,37 @@ export default function World(props: WorldProps) {
   );
 }
 
+// The scene re-renders whenever the game or the animation timeline moves on; most of it doesn't depend on either.
+const MSky = memo(Sky);
+const MLights = memo(Lights);
+const MBoard3D = memo(Board3D);
+const MPieces = memo(Pieces);
+const MPawns = memo(Pawns);
+const MSpots = memo(Spots);
+const MDecks = memo(Decks);
+const MParticles = memo(Particles);
+const NO_TRAPS: { space: string; title: string }[] = [];
+
 function Scene({ mode, board, quality, director, pawns, you, pickable, onPick, traps, decks, autoCam, recenter }: WorldProps) {
   const post = quality === "high";
-  const pawnOf = (id: string) => pawns.find((p) => p.id === id)?.pawn ?? "hot-purple";
+  const pawnsRef = useRef(pawns);
+  pawnsRef.current = pawns;
+  const pawnOf = useCallback((id: string) => pawnsRef.current.find((p) => p.id === id)?.pawn ?? "hot-purple", []);
+  const pickRef = useRef(onPick);
+  pickRef.current = onPick;
+  const pick = useCallback((space: string) => pickRef.current?.(space), []);
   return (
     <ThemeContext.Provider value={THEMES[board ?? "standard"]}>
       <color attach="background" args={["#05010f"]} />
       <fog attach="fog" args={["#120428", 90, 260]} />
-      <Sky quality={quality} />
-      <Lights quality={quality} />
-      <Board3D quality={quality} />
-      <Pieces intro={mode === "game" ? 0.6 : 0} flatTitle={mode === "game"} />
-      <Pawns players={pawns} director={mode === "game" ? director : undefined} lobby={mode === "lobby"} />
-      {mode === "game" && <Spots pickable={pickable} onPick={onPick} traps={traps ?? []} />}
-      <Decks director={mode === "game" ? director : undefined} counts={decks ?? { A: 60, B: 30 }} you={you ?? null} />
-      <Particles />
+      <MSky quality={quality} />
+      <MLights quality={quality} />
+      <MBoard3D quality={quality} />
+      <MPieces intro={mode === "game" ? 0.6 : 0} flatTitle={mode === "game"} />
+      <MPawns players={pawns} director={mode === "game" ? director : undefined} lobby={mode === "lobby"} />
+      {mode === "game" && <MSpots pickable={pickable} onPick={pick} traps={traps ?? NO_TRAPS} />}
+      <MDecks director={mode === "game" ? director : undefined} a={decks?.A ?? 60} b={decks?.B ?? 30} you={you ?? null} />
+      <MParticles />
       <CameraRig director={director} mode={mode} auto={autoCam} overview={!!pickable?.length} recenter={recenter} />
       {director && mode === "game" && <Ticker director={director} you={you ?? null} />}
       {director && mode === "game" && <Hud director={director} pawnOf={pawnOf} priority={post ? 2 : 1} />}
@@ -103,7 +121,7 @@ function Lights({ quality }: { quality: Quality }) {
     l.target.position.set(0, 0, 0);
     scene.add(l.target);
   }, [scene]);
-  const map = quality === "high" ? 4096 : 1536;
+  const map = quality === "high" ? 2048 : 1536;
   return (
     <>
       <ambientLight intensity={0.48} color="#f1ecff" />

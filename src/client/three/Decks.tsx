@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { cardSrc } from "../cards";
 import { sfx } from "../sfx";
 import { toWorld } from "./coords";
 import type { Director } from "./director";
@@ -60,7 +59,8 @@ function useCardGeometry() {
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-export function Decks({ director, counts, you }: { director?: Director; counts: { A: number; B: number }; you: string | null }) {
+export function Decks({ director, a, b, you }: { director?: Director; a: number; b: number; you: string | null }) {
+  const counts = useMemo(() => ({ A: a, B: b }), [a, b]);
   return (
     <>
       <Pile deck="A" count={counts.A} />
@@ -80,7 +80,10 @@ function Pile({ deck, count }: { deck: "A" | "B"; count: number }) {
   const [hover, setHover] = useState(false);
   const height = Math.max(LAYER * 2, Math.min(count, 90) * LAYER);
   const block = useMemo(() => edge(height), [edge, height]);
+  useEffect(() => () => block.dispose(), [block]);
   const sides = useMemo(() => new THREE.MeshStandardMaterial({ color: "#f3efe6", roughness: 0.85 }), []);
+  const top = useMemo(() => new THREE.MeshStandardMaterial({ map: blank(), roughness: 0.55 }), []);
+  top.map = back ?? blank();
   // A few loose cards near the top so it reads as a pile, not a brick.
   const loose = useMemo(() => [0.035, -0.05, 0.02].map((r, i) => ({ r, dx: (i - 1) * 0.03, dz: (i % 2 ? -1 : 1) * 0.04 })), []);
   const at = DECK_AT[deck];
@@ -91,15 +94,12 @@ function Pile({ deck, count }: { deck: "A" | "B"; count: number }) {
       <group rotation-x={-Math.PI / 2}>
         <mesh geometry={block} material={sides} position-z={height / 2} castShadow receiveShadow />
         {loose.map((l, i) => (
-          <mesh key={i} geometry={face} position={[l.dx, l.dz, height + 0.001 + i * LAYER * 0.6]} rotation-z={l.r} castShadow={i === loose.length - 1}>
-            <meshStandardMaterial key={back ? "map" : "plain"} map={back} roughness={0.55} />
-          </mesh>
+          <mesh key={i} geometry={face} material={top} position={[l.dx, l.dz, height + 0.001 + i * LAYER * 0.6]} rotation-z={l.r} castShadow={i === loose.length - 1} />
         ))}
       </group>
       {/* hit area for the hover tip */}
-      <mesh position-y={height / 2 + 0.1} onPointerOver={(e) => (e.stopPropagation(), setHover(true))} onPointerOut={() => setHover(false)}>
+      <mesh position-y={height / 2 + 0.1} visible={false} onPointerOver={(e) => (e.stopPropagation(), setHover(true))} onPointerOut={() => setHover(false)}>
         <boxGeometry args={[CARD_W, height + 0.2, CARD_H]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       {hover && (
         <Html position={[0, height + 2, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
@@ -136,20 +136,29 @@ function FlyingCard({ director, you, counts }: { director: Director; you: string
   useEffect(() => {
     if (!ev) return;
     let live = true;
-    let tex: THREE.Texture | null = null;
-    cardFace(cardSrc(ev.card))
-      .then((t) => {
-        tex = t;
-        if (live) setFaceTex(t);
-        else t.dispose();
-      })
+    // The face texture is cached (and usually prefetched when the game state arrived), so don't dispose it here.
+    cardFace(ev.card)
+      .then((t) => live && setFaceTex(t))
       .catch(() => {});
     return () => {
       live = false;
       setFaceTex(null);
-      tex?.dispose();
     };
   }, [ev]);
+
+  // One material per side for every card: swapping the map keeps the same shader instead of compiling a new one.
+  const mats = useMemo(
+    () => ({
+      face: new THREE.MeshBasicMaterial({ map: blank(), depthTest: false, toneMapped: false }),
+      back: new THREE.MeshBasicMaterial({ map: blank(), depthTest: false, toneMapped: false }),
+      rim: new THREE.MeshBasicMaterial({ color: "#ffffff", depthTest: false }),
+    }),
+    [],
+  );
+  const back = ev?.deck === "B" ? backB : backA;
+  mats.face.map = faceTex ?? blank();
+  mats.face.color.set(faceTex ? "#ffffff" : "#f3efe6");
+  mats.back.map = back ?? blank();
 
   /** Where the card ends up: centered in front of the camera, the size of the 2D reveal card. */
   const endPose = (out: THREE.Vector3, q: THREE.Quaternion) => {
@@ -164,7 +173,15 @@ function FlyingCard({ director, you, counts }: { director: Director; you: string
     q.copy(cam.quaternion);
   };
 
+  const fetched = useRef(new Set<number>());
   useFrame(() => {
+    // Start fetching faces for cards still waiting in the timeline, so they're ready when their turn comes.
+    for (const q of director.queue) {
+      if (q.kind !== "card" || fetched.current.has(q.card)) continue;
+      if (fetched.current.size > 40) fetched.current.clear();
+      fetched.current.add(q.card);
+      cardFace(q.card).catch(() => {});
+    }
     const a = director.active;
     if (a?.ev.kind === "card" && ev?.id !== a.id) {
       const card = a.ev;
@@ -237,19 +254,22 @@ function FlyingCard({ director, you, counts }: { director: Director; you: string
     g.scale.setScalar(THREE.MathUtils.lerp(s.scale, 1, ev.from === "pawn" ? easeOut(k) : k));
   });
 
-  const back = ev?.deck === "B" ? backB : backA;
   return (
     <group ref={ref} visible={false}>
       {/* drawn on top of the board as it flies, so it never clips through a standee */}
-      <mesh geometry={face} position-z={0.016} renderOrder={20}>
-        <meshBasicMaterial key={faceTex?.uuid ?? "plain"} map={faceTex} color={faceTex ? "#ffffff" : "#f3efe6"} depthTest={false} toneMapped={false} />
-      </mesh>
-      <mesh geometry={face} position-z={-0.016} rotation-y={Math.PI} renderOrder={20}>
-        <meshBasicMaterial key={back?.uuid ?? "plain"} map={back} depthTest={false} toneMapped={false} />
-      </mesh>
-      <mesh geometry={rim} renderOrder={19}>
-        <meshBasicMaterial color="#ffffff" depthTest={false} />
-      </mesh>
+      <mesh geometry={face} position-z={0.016} renderOrder={20} material={mats.face} />
+      <mesh geometry={face} position-z={-0.016} rotation-y={Math.PI} renderOrder={20} material={mats.back} />
+      <mesh geometry={rim} renderOrder={19} material={mats.rim} />
     </group>
   );
+}
+
+/** A 1x1 white texture, so materials always have a map and never need recompiling when the real one arrives. */
+let white: THREE.Texture | null = null;
+function blank() {
+  if (!white) {
+    white = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+    white.needsUpdate = true;
+  }
+  return white;
 }
