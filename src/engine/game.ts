@@ -11,6 +11,7 @@ import type {
   PlayerState,
   Pos,
   Prompt,
+  PromptInput,
   Settings,
   Watcher,
 } from "./types";
@@ -293,7 +294,7 @@ export class Game {
           this.log(`${p.name} used Freedom! and escaped the NEBULA.`, { player: p.id, card: { id: 101, deck: "B" } });
         }
       }
-      if (p.pos.kind === "nebula") {
+      if ((p.pos as Pos).kind === "nebula") {
         p.nebulaTurns = Math.max(0, p.nebulaTurns - 1);
         if (p.nebulaTurns === 0) {
           this.leaveNebula(p);
@@ -324,12 +325,12 @@ export class Game {
       if (a.action === "play") {
         await this.playBonus(p, a.card);
         if (this.state.winner) return;
-        if (p.pos.kind === "nebula" || typeAt(this.board, p.pos) === "grappling-hook" !== onHook) break;
+        if ((p.pos as Pos).kind === "nebula" || (typeAt(this.board, p.pos) === "grappling-hook") !== onHook) break;
         continue;
       }
       break;
     }
-    if (p.pos.kind === "nebula" || this.state.winner) return;
+    if ((p.pos as Pos).kind === "nebula" || this.state.winner) return;
 
     if (typeAt(this.board, p.pos) === "grappling-hook") {
       const [d] = await this.roll(p.id, 1, "Roll a 1 to escape the Grappling Hook and win!", "Grappling Hook");
@@ -384,7 +385,7 @@ export class Game {
 
   // ---------------------------------------------------------------- prompts
 
-  ask(prompt: Omit<Prompt, "id"> & { id?: number }): Promise<Answer | { timeout: true }> {
+  ask(prompt: PromptInput): Promise<Answer | { timeout: true }> {
     const full = { ...prompt, id: ++this.promptSeq } as Prompt;
     this.state.pending = full;
     return new Promise((resolve) => {
@@ -607,7 +608,7 @@ export class Game {
       if (pos.kind === "start") break;
     }
     await this.place(pid, pos, { silent: opts.fireTraps === false });
-    const where = pos.kind === "start" ? "START" : pos.kind === "space" ? describeSpace(this.board, pos.id) : pos.kind;
+    const where = pos.kind === "start" ? "START" : pos.kind === "space" ? describeSpace(this.board, pos.id) : "somewhere";
     this.log(`${p.name} moved ${n > 0 ? "+" : ""}${n} to ${where}.`, { player: pid });
     return path;
   }

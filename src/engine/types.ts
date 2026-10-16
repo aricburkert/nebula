@@ -124,3 +124,6 @@ export interface GameState {
   winner: string | null;
   settings: Settings;
 }
+
+/** A prompt before the engine gives it an id. */
+export type PromptInput = Prompt extends infer P ? (P extends Prompt ? Omit<P, "id"> : never) : never;
