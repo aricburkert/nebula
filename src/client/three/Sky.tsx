@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useThree } from "@react-three/fiber";
-import { Sparkles, Stars } from "@react-three/drei";
+import { Stars } from "@react-three/drei";
 import * as THREE from "three";
 import type { Quality } from "./quality";
 
 /**
- * Deep space around the board: a nebula, stars, and drifting sparkles. The nebula's noise is far too costly
+ * Deep space around the board: a nebula and a field of stars. The nebula's noise is far too costly
  * to run for every pixel every frame, so it is painted once into a cube map and the sky just looks that up.
+ * The stars hold still: drei pulses every star in unison, and drifting sparkles bloom into bright blobs when
+ * they pass near the camera, which both read as the background flashing.
  */
 export function Sky({ quality }: { quality: Quality }) {
   const { gl } = useThree();
@@ -77,8 +79,7 @@ export function Sky({ quality }: { quality: Quality }) {
           <sphereGeometry args={[300, 48, 24]} />
         </mesh>
       )}
-      <Stars radius={180} depth={80} count={quality === "high" ? 6000 : 2500} factor={5} saturation={0.6} fade speed={0.6} />
-      <Sparkles count={quality === "high" ? 160 : 60} scale={[70, 18, 45]} position={[0, 4, 0]} size={4} speed={0.25} color="#d9b8ff" opacity={0.7} />
+      <Stars radius={180} depth={80} count={quality === "high" ? 6000 : 2500} factor={5} saturation={0.6} fade speed={0} />
     </>
   );
 }
