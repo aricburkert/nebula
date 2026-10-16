@@ -1,0 +1,43 @@
+{
+  "board": "standard",
+  "notes": "Spaces in path order, transcribed from boards/Standard Edition.svg. 'color' is the dot printed on the space (null = no color: the Safe Zones). 'next' lists the space ids you can move to going forward; a fork has two. Off-board zones: START, FINISH, NEBULA (the vortex art).",
+  "spaces": [
+    {"id": "s1",  "type": "bonus",          "color": "red",   "next": ["s2"]},
+    {"id": "s2",  "type": "hippo-bee",      "color": "green", "next": ["s3"],  "text": "HIPPO BEE — Roll a 2, 4, or 6 to fly to the next Hippo Bee.", "effect": {"roll": [2,4,6], "success": {"teleport": "c7"}}},
+    {"id": "s3",  "type": "bonus",          "color": "blue",  "next": ["s4"]},
+    {"id": "s4",  "type": "troll-fight",    "color": "red",   "next": ["s5"],  "text": "TROLL FIGHT! — Move to the Troll on the bridge and fight!", "effect": {"teleport": "a3", "then": "resolve"}},
+    {"id": "s5",  "type": "spinner",        "color": "green", "next": ["s6"],  "text": "SPIN THE SPINNER"},
+    {"id": "s6",  "type": "fork",           "color": "blue",  "next": ["a1", "b1"], "text": "↓ OR →  (player chooses the bridge path or the lower path)"},
+
+    {"id": "a1",  "type": "bonus",          "color": "red",   "next": ["a2"], "path": "bridge"},
+    {"id": "a2",  "type": "safe",           "color": null,    "next": ["a3"], "path": "bridge"},
+    {"id": "a3",  "type": "troll-battle",   "color": "green", "next": ["a4"], "path": "bridge", "text": "TROLL BATTLE! — Roll a 2, 4, or 6 to defeat the Troll! If you lose, go down to the boat.", "effect": {"roll": [2,4,6], "fail": {"teleport": "b3"}}},
+    {"id": "a4",  "type": "spinner",        "color": "blue",  "next": ["dbrz"], "path": "bridge"},
+
+    {"id": "b1",  "type": "star",           "color": "red",   "next": ["b2"], "path": "lower", "text": "Roll a 3 or 5 to warp to the next star.", "effect": {"roll": [3,5], "success": {"teleport": "c1"}}},
+    {"id": "b2",  "type": "bonus",          "color": "green", "next": ["b3"], "path": "lower"},
+    {"id": "b3",  "type": "boat",           "color": "blue",  "next": ["b4"], "path": "lower", "text": "BOAT"},
+    {"id": "b4",  "type": "safe",           "color": null,    "next": ["b5"], "path": "lower"},
+    {"id": "b5",  "type": "spinner",        "color": "red",   "next": ["b6"], "path": "lower"},
+    {"id": "b6",  "type": "bonus",          "color": "green", "next": ["b7"], "path": "lower"},
+    {"id": "b7",  "type": "nebula",         "color": "blue",  "next": ["dbrz"], "path": "lower", "text": "NEBULA! — Get sucked into the Nebula for 1 turn. (↑ EXIT NEBULA HERE!)", "effect": {"nebulaTurns": 1}},
+
+    {"id": "dbrz","type": "dragon-recovery","color": "red",   "next": ["c1"], "text": "DRAGON BATTLE RECOVERY ZONE"},
+
+    {"id": "c1",  "type": "star",           "color": "green", "next": ["c2"], "text": "Roll a 3 or 5 to warp to the next star.", "effect": {"roll": [3,5], "success": {"teleport": "c10"}}},
+    {"id": "c2",  "type": "canoe",          "color": "blue",  "next": ["c3"], "text": "CANOE — Roll a number higher than 3 to escape the rapids. If not, ride the rapids down to the boat.", "effect": {"roll": [4,5,6], "fail": {"teleport": "b3"}}},
+    {"id": "c3",  "type": "bonus",          "color": "red",   "next": ["c4"]},
+    {"id": "c4",  "type": "spinner",        "color": "green", "next": ["c5"]},
+    {"id": "c5",  "type": "dragon-fight",   "color": "blue",  "next": ["c6"], "text": "DRAGON FIGHT! — Roll a 2, 4, or 6 to defeat the Dragon! Loser gets flame blasted back to the Dragon Battle Recovery Zone.", "effect": {"roll": [2,4,6], "fail": {"teleport": "dbrz"}}},
+    {"id": "c6",  "type": "safe",           "color": null,    "next": ["c7"]},
+    {"id": "c7",  "type": "hippo-bee",      "color": "red",   "next": ["c8"], "text": "HIPPO BEE — Roll a 2, 4, or 6 to fly to the previous Hippo Bee.", "effect": {"roll": [2,4,6], "success": {"teleport": "s2"}}},
+    {"id": "c8",  "type": "bonus",          "color": "green", "next": ["c9"]},
+    {"id": "c9",  "type": "cannon",         "color": "blue",  "next": ["c10"], "text": "CANNON! — Spin the spinner. When it stops, blast anybody on that same color back 3 spaces.", "effect": {"spinColor": true, "targetsColor": {"move": -3}}},
+    {"id": "c10", "type": "star",           "color": "red",   "next": ["c11"], "text": "Roll a 3 or 5 to warp back to the first star.", "effect": {"roll": [3,5], "success": {"teleport": "b1"}}},
+    {"id": "c11", "type": "bonus",          "color": "green", "next": ["c12"]},
+    {"id": "c12", "type": "safe",           "color": null,    "next": ["c13"]},
+    {"id": "c13", "type": "spinner",        "color": "blue",  "next": ["c14"]},
+    {"id": "c14", "type": "bonus",          "color": "red",   "next": ["c15"]},
+    {"id": "c15", "type": "grappling-hook", "color": "green", "next": ["finish"], "text": "STOP! GRAPPLING HOOK! — You cannot go any farther! Do NOT collect an action card on your turn. Roll a 1 to win.", "effect": {"blocksMovement": true, "skipActionCard": true, "winRoll": [1]}}
+  ]
+}
