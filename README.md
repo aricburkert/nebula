@@ -11,8 +11,9 @@ An online multiplayer version of the party board game *The Nebula from Hell*: cr
 - `data/spinner-standard.json` — the spinner's 8 segments.
 - `src/engine/` — the game itself: rules, board, every card's script, and a bot. It runs on the server and replays from its input log, so a game survives restarts.
 - `src/worker/` — the Cloudflare Worker (`/api/rooms`) and the `Room` Durable Object that holds each game, its chat and its players.
-- `src/client/` — the React app: home page, lobby, board, prompts, hand, chat and log.
-- `public/assets/` — the real card art, board, spinner and pawns.
+- `src/client/` — the React app: home page, lobby, prompts, hand, chat and log. `Board.tsx` is the flat 2D board, used when WebGL isn't available.
+- `src/client/three/` — the 3D game (three.js via react-three-fiber): the board with a raised track, the illustrations standing up off it as pop-up cardboard standees, pawns, decks, dice and spinner. `director.ts` turns each new game state into a timeline of animations so everyone sees the same dice, card and hop in order; it never changes the game.
+- `public/assets/` — the real card art, board, spinner, pawns and logos. `board3d/` is generated from the board SVG (see below).
 
 ## Run it locally
 
@@ -24,6 +25,16 @@ npm run build    # typecheck and production build
 ```
 
 Open the site in two browser windows (or one normal, one private) to play against yourself.
+
+The 3D board art is cut out of `public/assets/board/standard.svg` by a script that needs a browser (for exact bounding boxes). Rerun it only if the board SVG changes:
+
+```sh
+PLAYWRIGHT_CHROMIUM=/path/to/chrome node scripts/board-art.mjs
+```
+
+It writes the flat board (`public/assets/board3d/flat.svg`), one SVG per standee (`public/assets/board3d/pieces/`), and `src/client/three/boardArt.json` (piece positions plus the track, river, star and shield outlines).
+
+The settings menu in a game switches 3D quality (High adds bloom and sharper textures), the auto camera, and sound.
 
 ## Deploy to Cloudflare
 

@@ -28,7 +28,8 @@ interface Meta {
 const VOTE_TIMEOUT_MS = 120_000;
 const ABSENT_BOT_MS = 20_000;
 const CHAT_KEEP = 100;
-const BOT_THINK_MS = 1200;
+// Long enough for the dice to land and the pawn to finish hopping before the next move.
+const BOT_THINK_MS = 2200;
 const BOT_NAMES = ["Robo Rita", "Beep Boop Bob", "Sparky", "Unit 42", "Captain Chip", "Hal 9001", "Gizmo", "Toaster"];
 
 /** One game room. Holds the lobby, the chat and the authoritative game, rebuilt from its input log after a restart. */

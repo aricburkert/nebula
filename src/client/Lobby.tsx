@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MAX_PLAYERS, PAWNS, type RoomInfo } from "../shared/protocol";
 import type { RoomConnection } from "./useRoom";
+import { WorldLayer } from "./WorldLayer";
 
 export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) {
   const me = room.players.find((p) => p.id === conn.you);
@@ -19,10 +20,12 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
 
   return (
     <main className="lobby">
+      <WorldLayer mode="lobby" pawns={room.players.map((p) => ({ id: p.id, pawn: p.pawn, name: p.name }))} />
       <h1 className="logo small-logo">
-        <span className="logo-nebula">Nebula</span> <span className="logo-hell">Lobby</span>
+        <img className="lobby-logo" src="/assets/logo/title.webp" alt="The Nebula from Hell" />
+        <span className="lobby-word">Lobby</span>
       </h1>
-      <section className="panel">
+      <section className="panel-glass">
         <div className="share">
           <div>
             <div className="muted small">Room code</div>
@@ -45,9 +48,9 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
         </div>
       </section>
 
-      {room.phase !== "lobby" && !me && <p className="panel">This game has already started. You're watching.</p>}
+      {room.phase !== "lobby" && !me && <p className="panel-glass">This game has already started. You're watching.</p>}
 
-      <section className="panel">
+      <section className="panel-glass">
         <h2>{me ? "Pick your pawn" : "Join the game"}</h2>
         {!me && room.phase === "lobby" && (
           <input className="name-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" maxLength={20} aria-label="Your name" />
@@ -81,7 +84,7 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
         )}
       </section>
 
-      <section className="panel">
+      <section className="panel-glass">
         <h2>
           Players <span className="muted small">({room.players.length}/{MAX_PLAYERS})</span>
         </h2>
@@ -110,7 +113,7 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
         )}
       </section>
 
-      <section className="panel">
+      <section className="panel-glass">
         <h2>Settings</h2>
         <label className="toggle">
           <input

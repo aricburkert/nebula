@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Lobby } from "./Lobby";
 import { GameScreen } from "./GameScreen";
 import { useRoom } from "./useRoom";
+import { WorldLayer } from "./WorldLayer";
 
 function roomFromPath(): string | null {
   const m = location.pathname.match(/^\/r\/([A-Za-z0-9]{5})\/?$/);
@@ -37,14 +38,12 @@ function Home({ onGo }: { onGo: (code: string) => void }) {
   };
   return (
     <main className="home">
+      <WorldLayer mode="attract" pawns={[]} />
       <h1 className="logo">
-        <span className="logo-the">The</span>
-        <span className="logo-nebula">Nebula</span>
-        <span className="logo-from">from</span>
-        <span className="logo-hell">Hell</span>
+        <img className="logo-img" src="/assets/logo/full.webp" alt="The Nebula from Hell: the board game that hates you" />
       </h1>
-      <p className="tagline">The party game for sarcastic people who enjoy making fun of others. Now online.</p>
-      <div className="home-actions panel">
+      <p className="tagline">The party game for sarcastic people who enjoy making fun of others. Now online, and in 3D.</p>
+      <div className="home-actions panel-glass">
         <button className="btn big" onClick={create} disabled={busy}>
           Create a room
         </button>
@@ -68,7 +67,7 @@ function Home({ onGo }: { onGo: (code: string) => void }) {
           </button>
         </form>
       </div>
-      <p className="small muted">2 to 6 players. Send your friends the room link and race to FINISH.</p>
+      <p className="home-foot">2 to 6 players. Send your friends the room link and race to FINISH.</p>
     </main>
   );
 }
@@ -85,7 +84,8 @@ function Room({ code }: { code: string }) {
     <>
       {!room ? (
         <main className="home">
-          <p>{conn.status === "closed" ? "Reconnecting…" : "Connecting…"}</p>
+          <WorldLayer mode="attract" pawns={[]} />
+          <p className="connecting">{conn.status === "closed" ? "Reconnecting…" : "Connecting…"}</p>
         </main>
       ) : room.phase === "lobby" || !game ? (
         <Lobby conn={conn} room={room} />

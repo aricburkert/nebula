@@ -7,6 +7,7 @@ import type {
   GameState,
   Input,
   LogEntry,
+  Motion,
   Option,
   PlayerState,
   Pos,
@@ -84,6 +85,9 @@ export class Game {
   private settledResolve: (() => void) | null = null;
   private promptSeq = 0;
   private logSeq = 0;
+  private motionSeq = 0;
+  /** Set while move() walks a pawn, so place() records the steps. */
+  private walking: string[] | null = null;
   private watcherSeq = 0;
   private watcherDefs = new Map<number, WatcherDef>();
   private movedThisTurn = new Set<string>();
@@ -129,6 +133,7 @@ export class Game {
       lastSpin: null,
       pending: null,
       log: [],
+      motions: [],
       winner: null,
       settings: config.settings,
     };
@@ -512,6 +517,12 @@ export class Game {
     if (this.state.log.length > 300) this.state.log.splice(0, this.state.log.length - 300);
   }
 
+  /** Records a pawn's move for the screens to animate. */
+  private moved(p: PlayerState, from: Pos, how: Motion["how"], path?: string[]) {
+    this.state.motions.push({ n: ++this.motionSeq, after: this.logSeq, player: p.id, from, to: p.pos, how, ...(path ? { path: [...path] } : {}) });
+    if (this.state.motions.length > 40) this.state.motions.splice(0, this.state.motions.length - 40);
+  }
+
   drawFrom(deck: "A" | "B"): number | undefined {
     const [d, discard] = deck === "A" ? (["actionDeck", "actionDiscard"] as const) : (["bonusDeck", "bonusDiscard"] as const);
     if (this.state[d].length === 0 && this.state[discard].length > 0) {
@@ -543,7 +554,11 @@ export class Game {
   /** Puts a pawn somewhere and fires traps. Does not resolve the space. */
   async place(pid: string, pos: Pos, opts: { silent?: boolean } = {}) {
     const p = this.player(pid);
+    const from = p.pos;
     p.pos = pos;
+    const walked = this.walking;
+    this.walking = null; // a trap that moves them again is a separate jump
+    this.moved(p, from, walked ? "walk" : "jump", walked ?? undefined);
     this.resolvedAt.delete(pid);
     if (pos.kind === "space") {
       const sp = space(this.board, pos.id);
@@ -574,7 +589,9 @@ export class Game {
 
   sendToNebula(pid: string, turns: number) {
     const p = this.player(pid);
+    const from = p.pos;
     p.pos = { kind: "nebula" };
+    this.moved(p, from, "nebula");
     p.nebulaTurns = Math.max(p.nebulaTurns, turns);
     this.movedThisTurn.add(pid);
     this.log(`${p.name} got sucked into the NEBULA for ${turns} turn${turns === 1 ? "" : "s"}!`, { player: pid });
@@ -590,7 +607,9 @@ export class Game {
 
   leaveNebula(p: PlayerState) {
     p.nebulaTurns = 0;
+    const from = p.pos;
     p.pos = { kind: "space", id: nebulaExit(this.board) };
+    this.moved(p, from, "unnebula");
     p.branch = "lower";
   }
 
@@ -635,7 +654,12 @@ export class Game {
       }
       if (pos.kind === "start") break;
     }
-    await this.place(pid, pos, { silent: opts.fireTraps === false });
+    this.walking = path;
+    try {
+      await this.place(pid, pos, { silent: opts.fireTraps === false });
+    } finally {
+      this.walking = null;
+    }
     const where = pos.kind === "start" ? "START" : pos.kind === "space" ? describeSpace(this.board, pos.id) : "somewhere";
     this.log(`${p.name} moved ${n > 0 ? "+" : ""}${n} to ${where}.`, { player: pid });
     return path;
@@ -657,7 +681,9 @@ export class Game {
 
   win(pid: string) {
     const p = this.player(pid);
+    const from = p.pos;
     p.pos = { kind: "finish" };
+    this.moved(p, from, "finish");
     this.state.winner = pid;
     this.log(`🎉 ${p.name} reached FINISH and wins The Nebula from Hell!`, { player: pid });
     throw new GameOver();
@@ -748,7 +774,9 @@ export class Game {
     if (input.card === 99) {
       if (!by.hand.includes(99)) return "You don't have My Turn! Your Turn!";
       this.discardFromHand(by, 99);
+      const from = target.pos;
       target.pos = { kind: "start" };
+      this.moved(target, from, "jump");
       target.nebulaTurns = 0;
       this.log(`${by.name} caught ${target.name} saying "${input.reason}"! Back to START.`, {
         player: by.id,
