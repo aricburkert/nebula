@@ -95,8 +95,8 @@ const PIECES: PieceCfg[] = [
     },
   },
   { name: "troll", lean: 0.16, idle: both(sway(1.6, 0.05), bob(3.2, 0.05)) },
-  { name: "nebula-woman", lean: 0.2, scale: 0.78, shift: [-20, 80], idle: both(sway(2.4, 0.12), bob(1.8, 0.15)) },
-  { name: "nebula-man", lean: 0.2, scale: 0.78, shift: [0, 60], idle: both(sway(2.0, 0.1, 2), bob(1.6, 0.15, 1)) },
+  { name: "nebula-woman", lean: 0.2, scale: 0.78, shift: [-20, 80], lift: TRACK_H * 0.55, idle: both(sway(2.4, 0.12), bob(1.8, 0.15)) },
+  { name: "nebula-man", lean: 0.2, scale: 0.78, shift: [0, 60], lift: TRACK_H * 0.55, idle: both(sway(2.0, 0.1, 2), bob(1.6, 0.15, 1)) },
   { name: "start-text", lean: 0.95, lift: 0.06, idle: (t, g) => g.scale.setScalar(1 + Math.sin(t * 2) * 0.025) },
   { name: "finish-text", lean: 0.6, lift: 0.06, shift: [0, -250], idle: (t, g) => g.scale.setScalar(1 + Math.sin(t * 2 + 1) * 0.025) },
 ];
@@ -189,7 +189,7 @@ function Standee({ cfg, delay }: { cfg: PieceCfg; delay: number }) {
 /** The game's title, floating over the middle of the board. */
 function Title({ delay, flat }: { delay: number; flat: boolean }) {
   const theme = useTheme();
-  const cut = useCut("title", { border: 18, edgeColor: "#3b0a6e" });
+  const cut = useCut("title", { border: 7, edgeColor: "#3b0a6e" });
   const ref = useRef<THREE.Group>(null);
   const born = useRef<number | null>(null);
   const [bx, by, bw, bh] = theme.pieces.title.box;
@@ -233,24 +233,14 @@ function Vortex() {
         depthWrite: false,
         uniforms: { uMap: { value: null }, uTime: { value: 0 }, uAspect: { value: bh / bw } },
         vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+        // The printed art as it is, with a faint glow rippling outward from the middle.
         fragmentShader: `
           varying vec2 vUv; uniform sampler2D uMap; uniform float uTime; uniform float uAspect;
           void main(){
-            vec2 c = vec2(0.5, 0.52);
-            vec2 q = (vUv - c) * vec2(1.0, uAspect);
-            float r = length(q);
-            float a = -uTime * (0.9 / (0.12 + r * 3.0));
-            float s = sin(a), co = cos(a);
-            vec2 rq = mat2(co, -s, s, co) * q;
-            vec2 uv = c + rq / vec2(1.0, uAspect);
-            vec4 col = texture2D(uMap, uv);
-            // keep the printed outline still so the edge stays put; swirl the inside
-            vec4 still = texture2D(uMap, vUv);
-            float inner = smoothstep(0.42, 0.18, r);
-            vec4 o = mix(still, col, inner);
-            o.a = still.a;
-            float glow = 0.25 + 0.15 * sin(uTime * 2.0 + r * 20.0);
-            o.rgb += o.rgb * glow * inner;
+            vec4 o = texture2D(uMap, vUv);
+            float r = length((vUv - vec2(0.5, 0.52)) * vec2(1.0, uAspect));
+            float inner = smoothstep(0.42, 0.1, r);
+            o.rgb *= 1.0 + inner * (0.05 + 0.05 * sin(uTime * 1.4 - r * 14.0));
             gl_FragColor = o;
           }`,
       }),
@@ -259,10 +249,11 @@ function Vortex() {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }, dt) => {
     mat.uniforms.uTime.value += dt;
-    if (light.current) light.current.intensity = 14 + Math.sin(clock.elapsedTime * 2.2) * 5;
+    if (light.current) light.current.intensity = 5 + Math.sin(clock.elapsedTime * 1.4) * 1.5;
   });
   if (tex && mat.uniforms.uMap.value !== tex) mat.uniforms.uMap.value = tex;
-  const c = toWorld(bx + bw / 2, by + bh / 2, 0.03);
+  // Sits on top of the raised path, like the printed art that spills over the NEBULA space.
+  const c = toWorld(bx + bw / 2, by + bh / 2, TRACK_H + 0.015);
   return (
     <group position={c}>
       {tex && (
@@ -277,7 +268,7 @@ function Vortex() {
 
 export const VORTEX_CENTER = (() => {
   const [bx, by, bw, bh] = PIECE.vortex.box;
-  return toWorld(bx + bw / 2, by + bh * 0.52, 0.05);
+  return toWorld(bx + bw / 2, by + bh * 0.52, TRACK_H + 0.05);
 })();
 export const VORTEX_SIZE = { w: PIECE.vortex.box[2] * PX, h: PIECE.vortex.box[3] * PX };
 void ART_W;

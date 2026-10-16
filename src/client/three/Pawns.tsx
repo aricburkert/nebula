@@ -7,7 +7,7 @@ import { pawnColor, posSpot, spotPoint } from "./coords";
 import type { Director, Running } from "./director";
 import { fx } from "./Particles";
 import { VORTEX_CENTER, VORTEX_SIZE } from "./Pieces";
-import { cutOut, glyph } from "./textures";
+import { glyph, imageTexture } from "./textures";
 import { useAsset } from "./useAsset";
 import { sfx } from "../sfx";
 
@@ -24,8 +24,43 @@ export interface PawnInfo {
 /** Live world position of every pawn, for the camera to follow. */
 export const pawnWorld = new Map<string, THREE.Vector3>();
 
-const PAWN_H = 2.9;
-const PAWN_W = (PAWN_H * 300) / 525;
+// The pawn art is a capsule (stadium) printed on a 300x525 sheet; this is where it sits on the sheet.
+const ART = { w: 300, h: 525, x0: 47, x1: 253, y0: 56, y1: 474 };
+const CAP_H = 2.5;
+const CAP_W = (CAP_H * (ART.x1 - ART.x0)) / (ART.y1 - ART.y0);
+const CAP_D = 0.12;
+const CAP_BEVEL = 0.035;
+/** How deep the capsule sits in its stand. */
+const CAP_SINK = 0.05;
+const PAWN_H = CAP_H + CAP_SINK;
+
+/** A thick capsule with rounded edges whose front and back show the pawn art. */
+function capsuleGeometry(): THREE.ExtrudeGeometry {
+  const hw = CAP_W / 2 - CAP_BEVEL;
+  const r = hw;
+  const straight = CAP_H / 2 - CAP_BEVEL - r;
+  const s = new THREE.Shape();
+  s.moveTo(hw, -straight);
+  s.lineTo(hw, straight);
+  s.absarc(0, straight, r, 0, Math.PI, false);
+  s.lineTo(-hw, -straight);
+  s.absarc(0, -straight, r, Math.PI, Math.PI * 2, false);
+  const g = new THREE.ExtrudeGeometry(s, { depth: CAP_D, curveSegments: 28, bevelEnabled: true, bevelSize: CAP_BEVEL, bevelThickness: CAP_BEVEL, bevelSegments: 3 });
+  g.translate(0, CAP_H / 2 + 0.16 - CAP_SINK, -CAP_D / 2);
+  // Map the capsule's outline onto the capsule printed on the art.
+  const u0 = ART.x0 / ART.w, u1 = ART.x1 / ART.w;
+  const v0 = 1 - ART.y1 / ART.h, v1 = 1 - ART.y0 / ART.h;
+  const pos = g.attributes.position;
+  const uv = g.attributes.uv;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i) / CAP_W + 0.5;
+    const y = (pos.getY(i) - (0.16 - CAP_SINK)) / CAP_H;
+    uv.setXY(i, u0 + x * (u1 - u0), v0 + y * (v1 - v0));
+  }
+  uv.needsUpdate = true;
+  return g;
+}
+const CAPSULE = capsuleGeometry();
 
 const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
 const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
@@ -69,10 +104,7 @@ export function Pawns({ players, director, lobby }: { players: PawnInfo[]; direc
 
 function Pawn({ info, index, order, director, lobby }: { info: PawnInfo; index: number; order: string[]; director?: Director; lobby?: boolean }) {
   const color = pawnColor(info.pawn);
-  const cut = useAsset(
-    () => cutOut(`/assets/pawns/${info.pawn}.png`, 300, 525, { border: 10, scale: 1.4, edgeColor: new THREE.Color(color).multiplyScalar(0.6).getStyle() }),
-    `pawn:${info.pawn}`,
-  );
+  const art = useAsset(() => imageTexture(`/assets/pawns/${info.pawn}.png`), `pawn:${info.pawn}`);
   const root = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
   const face = useRef<THREE.Group>(null);
@@ -89,19 +121,14 @@ function Pawn({ info, index, order, director, lobby }: { info: PawnInfo; index: 
   const zTex = useMemo(() => glyph("💤", { size: 96 }), []);
   const sTex = useMemo(() => glyph("☠️", { size: 96 }), []);
 
+  // Extrude groups: 0 is the front and back, 1 the rim.
   const mats = useMemo(() => {
-    if (!cut) return null;
-    return {
-      face: new THREE.MeshStandardMaterial({ map: cut.face, alphaTest: 0.5, roughness: 0.55 }),
-      edge: new THREE.MeshStandardMaterial({ map: cut.edge, alphaTest: 0.5, roughness: 0.5 }),
-      back: new THREE.MeshStandardMaterial({ map: cut.face, alphaTest: 0.5, roughness: 0.55, side: THREE.BackSide }),
-    };
-  }, [cut]);
-  const geo = useMemo(() => {
-    const w = cut ? (cut.width / 300) * PAWN_W : PAWN_W;
-    const h = cut ? (cut.height / 525) * PAWN_H : PAWN_H;
-    return new THREE.PlaneGeometry(w, h).translate(0, h / 2 + 0.14, 0);
-  }, [cut]);
+    if (!art) return null;
+    return [
+      new THREE.MeshStandardMaterial({ map: art, roughness: 0.35, metalness: 0.05 }),
+      new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.75), roughness: 0.3, metalness: 0.15 }),
+    ];
+  }, [art, color]);
 
   useFrame(({ clock, camera }, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
@@ -265,11 +292,7 @@ function Pawn({ info, index, order, director, lobby }: { info: PawnInfo; index: 
     <group ref={root}>
       <group ref={body}>
         <group ref={face} onPointerOver={(e) => (e.stopPropagation(), setHover(true))} onPointerOut={() => setHover(false)}>
-          <mesh geometry={geo} material={mats.face} castShadow />
-          {[1, 2, 3].map((k) => (
-            <mesh key={k} geometry={geo} material={mats.edge} position-z={-k * 0.025} />
-          ))}
-          <mesh geometry={geo} material={mats.back} position-z={-0.1} />
+          <mesh geometry={CAPSULE} material={mats} castShadow />
         </group>
         {/* plastic stand */}
         <mesh position-y={0.08} castShadow receiveShadow>
