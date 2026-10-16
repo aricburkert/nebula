@@ -75,10 +75,10 @@ export function GameScreen({ conn, room, game }: Props) {
 
   return (
     <main className="game">
-      <WorldLayer mode="game" director={director} pawns={pawns} you={conn.you} pickable={pickable} onPick={pick} traps={traps} decks={{ A: game.actionDeck, B: game.bonusDeck }} />
+      <WorldLayer mode="game" board={room.settings.board} director={director} pawns={pawns} you={conn.you} pickable={pickable} onPick={pick} traps={traps} decks={{ A: game.actionDeck, B: game.bonusDeck }} />
       {!settings.gl && (
         <div className="flat-board-wrap">
-          <Board game={game} pickable={pickable} onPick={pick} />
+          <Board game={game} board={room.settings.board} pickable={pickable} onPick={pick} />
         </div>
       )}
 
@@ -187,6 +187,7 @@ function TopBar({ room, game }: { room: RoomInfo; game: GameView }) {
       </a>
       <span className="room-chip">
         Room <b>{room.code}</b> · Round {game.round}
+        {room.settings.board === "deep-space" && " · Deep Space"}
         {room.settings.videoCall && " · 📹"}
       </span>
       <span className="decks">

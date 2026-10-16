@@ -8,6 +8,7 @@ import { ART_H, ART_W, BOARD_D, BOARD_W, PX, SLAB_H, TRACK_H, toWorld } from "./
 import { boardTexture } from "./textures";
 import { useAsset } from "./useAsset";
 import type { Quality } from "./quality";
+import { useTheme } from "./theme";
 
 const shapesOf = (d: string) => {
   const data = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${d}"/></svg>`);
@@ -30,7 +31,8 @@ function planarUVs(g: THREE.BufferGeometry) {
 }
 
 export function Board3D({ quality }: { quality: Quality }) {
-  const tex = useAsset(() => boardTexture("/assets/board3d/flat.svg", quality === "high" ? 6144 : 4096), `flat:${quality}`);
+  const theme = useTheme();
+  const tex = useAsset(() => boardTexture(theme.flat, quality === "high" ? 6144 : 4096), `flat:${theme.id}:${quality}`);
 
   const track = useMemo(() => {
     const bevel = 4;
@@ -49,7 +51,8 @@ export function Board3D({ quality }: { quality: Quality }) {
   }, []);
 
   const topMat = useMemo(() => new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0 }), []);
-  const trackSide = useMemo(() => new THREE.MeshStandardMaterial({ color: "#f4f1ea", roughness: 0.7 }), []);
+  const trackSide = useMemo(() => new THREE.MeshStandardMaterial({ roughness: 0.7 }), []);
+  trackSide.color.set(theme.trackSide);
   if (tex && topMat.map !== tex) {
     topMat.map = tex;
     topMat.needsUpdate = true;
@@ -59,7 +62,7 @@ export function Board3D({ quality }: { quality: Quality }) {
     <group>
       {/* the board itself: a thick game board floating in space */}
       <RoundedBox args={[BOARD_W + 0.6, SLAB_H, BOARD_D + 0.6]} radius={0.28} smoothness={4} position={[0, -SLAB_H / 2 - 0.001, 0]} receiveShadow castShadow>
-        <meshStandardMaterial color="#1a0f33" roughness={0.45} metalness={0.3} />
+        <meshStandardMaterial color={theme.slab} roughness={0.45} metalness={0.3} />
       </RoundedBox>
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.002, 0]} receiveShadow material={topMat} visible={!!tex}>
         <planeGeometry args={[BOARD_W, BOARD_D]} />
@@ -71,8 +74,8 @@ export function Board3D({ quality }: { quality: Quality }) {
       <Underglow />
 
       <mesh geometry={track} material={[topMat, trackSide]} castShadow receiveShadow visible={!!tex} />
-      <Water d={art.shapes.river} />
-      <Water d={art.shapes.rapids} fast />
+      <Water d={art.shapes.river} tint={theme.water} />
+      <Water d={art.shapes.rapids} tint={theme.water} fast />
       {art.stars.map((s, i) => (
         <Star key={i} d={s.d!} box={s.box} phase={i * 1.7} />
       ))}
@@ -113,17 +116,17 @@ function Underglow() {
 }
 
 /** The river and the rapids: the printed water with moving glints on top. */
-function Water({ d, fast }: { d: string; fast?: boolean }) {
+function Water({ d, fast, tint }: { d: string; fast?: boolean; tint: [number, number, number] }) {
   const geo = useMemo(() => toBoardSpace(new THREE.ShapeGeometry(shapesOf(d), 24), 0.012), [d]);
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
         transparent: true,
         depthWrite: false,
-        uniforms: { uTime: { value: 0 }, uSpeed: { value: fast ? 2.2 : 0.8 } },
+        uniforms: { uTime: { value: 0 }, uSpeed: { value: fast ? 2.2 : 0.8 }, uTint: { value: new THREE.Vector3() } },
         vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
         fragmentShader: `
-          varying vec3 vW; uniform float uTime; uniform float uSpeed;
+          varying vec3 vW; uniform float uTime; uniform float uSpeed; uniform vec3 uTint;
           float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
           float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
             return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
@@ -134,11 +137,12 @@ function Water({ d, fast }: { d: string; fast?: boolean }) {
             float glint = smoothstep(1.05, 1.32, a);
             float ripple = 0.5 + 0.5 * sin(vW.x * 3.0 + vW.z * 2.0 + t * 2.0 + a * 4.0);
             float alpha = glint * 0.55 + ripple * 0.06;
-            gl_FragColor = vec4(vec3(0.85, 0.97, 1.0), alpha);
+            gl_FragColor = vec4(uTint, alpha);
           }`,
       }),
     [fast],
   );
+  mat.uniforms.uTint.value.set(...tint);
   useFrame((_, dt) => (mat.uniforms.uTime.value += dt));
   return <mesh geometry={geo} material={mat} renderOrder={1} />;
 }

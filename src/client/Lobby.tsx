@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MAX_PLAYERS, PAWNS, type RoomInfo } from "../shared/protocol";
+import { BOARDS, MAX_PLAYERS, pawnOnBoard, pawnsFor, type RoomInfo } from "../shared/protocol";
 import type { RoomConnection } from "./useRoom";
 import { WorldLayer } from "./WorldLayer";
 
@@ -12,15 +12,18 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
   const link = `${location.origin}/r/${room.code}`;
   const [copied, setCopied] = useState(false);
 
+  const board = room.settings.board;
   const pick = (id: string) => {
     if (me) conn.send({ t: "pawn", pawn: id });
     else setPawn(id);
   };
-  const selected = me?.pawn ?? pawn;
+  // If the host switches boards before you join, your pick becomes the same character in the other edition.
+  const chosen = pawn && pawnOnBoard(pawn, board);
+  const selected = me?.pawn ?? chosen;
 
   return (
     <main className="lobby">
-      <WorldLayer mode="lobby" pawns={room.players.map((p) => ({ id: p.id, pawn: p.pawn, name: p.name }))} />
+      <WorldLayer mode="lobby" board={board} pawns={room.players.map((p) => ({ id: p.id, pawn: p.pawn, name: p.name }))} />
       <h1 className="logo small-logo">
         <img className="lobby-logo" src="/assets/logo/title.webp" alt="The Nebula from Hell" />
         <span className="lobby-word">Lobby</span>
@@ -56,7 +59,7 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
           <input className="name-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" maxLength={20} aria-label="Your name" />
         )}
         <div className="pawn-grid">
-          {PAWNS.map((p) => {
+          {pawnsFor(board).map((p) => {
             const owner = room.players.find((x) => x.pawn === p.id);
             const disabled = !!owner && owner.id !== conn.you;
             return (
@@ -76,8 +79,8 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
         {!me && room.phase === "lobby" && (
           <button
             className="btn big"
-            disabled={!name.trim() || !pawn || taken.has(pawn) || room.players.length >= MAX_PLAYERS}
-            onClick={() => pawn && conn.send({ t: "join", name: name.trim(), pawn })}
+            disabled={!name.trim() || !chosen || taken.has(chosen) || room.players.length >= MAX_PLAYERS}
+            onClick={() => chosen && conn.send({ t: "join", name: name.trim(), pawn: chosen })}
           >
             {room.players.length >= MAX_PLAYERS ? "Room is full" : "Join"}
           </button>
@@ -115,6 +118,25 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
 
       <section className="panel-glass">
         <h2>Settings</h2>
+        <div className="board-pick" role="radiogroup" aria-label="Board">
+          {BOARDS.map((b) => (
+            <button
+              key={b.id}
+              role="radio"
+              aria-checked={board === b.id}
+              className={`board-card ${board === b.id ? "on" : ""}`}
+              disabled={!isHost || room.phase !== "lobby"}
+              onClick={() => board !== b.id && conn.send({ t: "settings", board: b.id })}
+            >
+              <img src={`/assets/board/${b.id}-thumb.jpg`} alt="" />
+              <span>{b.name}</span>
+            </button>
+          ))}
+        </div>
+        <p className="muted small board-note">
+          {isHost ? "Pick the board you'll play on. " : "The host picks the board. "}
+          Same spaces and rules; Deep Space is the whole game set in outer space, with its own pawns.
+        </p>
         <label className="toggle">
           <input
             type="checkbox"

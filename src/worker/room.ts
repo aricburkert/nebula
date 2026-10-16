@@ -3,7 +3,7 @@ import { Game, type GameConfig } from "../engine/game";
 import { botInput, promptPlayers } from "../engine/bot";
 import { Rng } from "../engine/rng";
 import type { Input } from "../engine/types";
-import { MAX_PLAYERS, PAWNS, type ChatMessage, type ClientMsg, type RoomInfo, type ServerMsg } from "../shared/protocol";
+import { isBoard, MAX_PLAYERS, pawnOnBoard, pawnsFor, PAWNS, type BoardId, type ChatMessage, type ClientMsg, type RoomInfo, type ServerMsg } from "../shared/protocol";
 
 interface Member {
   id: string;
@@ -18,7 +18,7 @@ interface Meta {
   host: string | null;
   phase: "lobby" | "playing" | "over";
   members: Member[];
-  settings: { videoCall: boolean };
+  settings: { videoCall: boolean; board: BoardId };
   config: GameConfig | null;
   chatSeq: number;
   /** Chat message ids already used as evidence for a "Gotcha". */
@@ -55,11 +55,13 @@ export class Room extends DurableObject {
       host: null,
       phase: "lobby",
       members: [],
-      settings: { videoCall: false },
+      settings: { videoCall: false, board: "standard" },
       config: null,
       chatSeq: 0,
       usedEvidence: [],
     };
+    // Rooms made before there was a board choice are Standard.
+    if (!isBoard(this.meta.settings.board)) this.meta.settings.board = "standard";
     this.chat = (await this.ctx.storage.get<ChatMessage[]>("chat")) ?? [];
     const rows = await this.ctx.storage.list<Input>({ prefix: "in:" });
     this.inputs = [...rows.values()];
@@ -128,9 +130,9 @@ export class Room extends DurableObject {
         if (this.meta.members.length >= MAX_PLAYERS) return this.error(ws, "This room is full.");
         const name = String(msg.name ?? "").trim().slice(0, 20);
         if (!name) return this.error(ws, "Pick a name.");
-        if (!PAWNS.some((p) => p.id === msg.pawn) || this.meta.members.some((m) => m.pawn === msg.pawn))
-          return this.error(ws, "That pawn is taken.");
-        const member: Member = { id: crypto.randomUUID().slice(0, 8), name, pawn: msg.pawn, token: crypto.randomUUID() };
+        const pawn = pawnOnBoard(String(msg.pawn), this.meta.settings.board);
+        if (!PAWNS.some((p) => p.id === pawn) || this.meta.members.some((m) => m.pawn === pawn)) return this.error(ws, "That pawn is taken.");
+        const member: Member = { id: crypto.randomUUID().slice(0, 8), name, pawn, token: crypto.randomUUID() };
         this.meta.members.push(member);
         this.meta.host ??= member.id;
         conn.player = member.id;
@@ -142,16 +144,19 @@ export class Room extends DurableObject {
       case "pawn": {
         const m = this.member(me);
         if (!m || this.meta.phase !== "lobby") return;
-        if (!PAWNS.some((p) => p.id === msg.pawn) || this.meta.members.some((x) => x.pawn === msg.pawn && x.id !== m.id))
-          return this.error(ws, "That pawn is taken.");
-        m.pawn = msg.pawn;
+        const pawn = pawnOnBoard(String(msg.pawn), this.meta.settings.board);
+        if (!PAWNS.some((p) => p.id === pawn) || this.meta.members.some((x) => x.pawn === pawn && x.id !== m.id)) return this.error(ws, "That pawn is taken.");
+        m.pawn = pawn;
         await this.saveMeta();
         this.broadcastRoom();
         return;
       }
       case "settings": {
         if (me !== this.meta.host || this.meta.phase !== "lobby") return;
-        this.meta.settings = { videoCall: !!msg.videoCall };
+        const board = isBoard(msg.board) ? msg.board : this.meta.settings.board;
+        this.meta.settings = { videoCall: msg.videoCall === undefined ? this.meta.settings.videoCall : !!msg.videoCall, board };
+        // Everyone swaps to the same character in the other edition (twins never clash, so nobody loses their pick).
+        for (const m of this.meta.members) m.pawn = pawnOnBoard(m.pawn, board);
         await this.saveMeta();
         this.broadcastRoom();
         return;
@@ -159,7 +164,7 @@ export class Room extends DurableObject {
       case "addBot": {
         if (me !== this.meta.host || this.meta.phase !== "lobby") return;
         if (this.meta.members.length >= MAX_PLAYERS) return this.error(ws, "This room is full.");
-        const pawns = PAWNS.filter((p) => !this.meta.members.some((m) => m.pawn === p.id));
+        const pawns = pawnsFor(this.meta.settings.board).filter((p) => !this.meta.members.some((m) => m.pawn === p.id));
         const name = BOT_NAMES.find((n) => !this.meta.members.some((m) => m.name === n)) ?? `Bot ${this.meta.members.length + 1}`;
         const pawn = pawns[Math.floor(Math.random() * pawns.length)];
         this.meta.members.push({ id: crypto.randomUUID().slice(0, 8), name, pawn: pawn.id, token: "", bot: true });

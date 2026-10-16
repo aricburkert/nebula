@@ -1,9 +1,11 @@
 import type { GameView } from "../engine/game";
 import { STANDARD_LAYOUT } from "./boardLayout";
 import { cardTitle } from "./cards";
+import type { BoardId } from "../shared/protocol";
 
 interface Props {
   game: GameView;
+  board?: BoardId;
   /** When set, these spaces glow and can be clicked. */
   pickable?: string[];
   onPick?: (space: string) => void;
@@ -12,7 +14,9 @@ interface Props {
 const L = STANDARD_LAYOUT;
 const pct = (x: number, y: number) => ({ left: `${(x / L.width) * 100}%`, top: `${(y / L.height) * 100}%` });
 
-export function Board({ game, pickable, onPick }: Props) {
+const PICTURE: Record<BoardId, string> = { standard: "/assets/board/standard.svg", "deep-space": "/assets/board/deep-space.jpg" };
+
+export function Board({ game, board = "standard", pickable, onPick }: Props) {
   // Group pawns by spot so several on one space fan out.
   const groups = new Map<string, GameView["players"]>();
   for (const p of game.players) {
@@ -21,7 +25,7 @@ export function Board({ game, pickable, onPick }: Props) {
   }
   return (
     <div className="board" style={{ aspectRatio: `${L.width} / ${L.height}` }}>
-      <img className="board-img" src="/assets/board/standard.svg" alt="The Nebula from Hell game board" />
+      <img className="board-img" src={PICTURE[board]} alt="The Nebula from Hell game board" />
       {game.traps.map((t) => {
         const [x, y] = L.spots[t.space];
         return (

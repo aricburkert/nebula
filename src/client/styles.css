@@ -454,6 +454,56 @@ input:focus {
   opacity: 0.4;
   cursor: default;
 }
+.board-pick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.board-card {
+  font: inherit;
+  color: var(--ink);
+  padding: 6px 6px 8px;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  transition: transform 0.15s, background 0.15s;
+}
+.board-card img {
+  width: 100%;
+  aspect-ratio: 5475 / 2775;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+.board-card span {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+.board-card:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
+}
+.board-card.on {
+  border-color: var(--yellow);
+  background: rgba(255, 214, 10, 0.14);
+  box-shadow: 0 0 24px rgba(255, 214, 10, 0.25);
+}
+.board-card:disabled {
+  cursor: default;
+}
+.board-card:disabled:not(.on) {
+  opacity: 0.55;
+}
+.board-note {
+  margin: 0 0 14px;
+}
 .lobby-players {
   list-style: none;
   margin: 0 0 12px;

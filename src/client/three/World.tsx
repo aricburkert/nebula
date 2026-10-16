@@ -14,10 +14,14 @@ import type { Quality } from "./quality";
 import { Sky } from "./Sky";
 import { Spots } from "./Spots";
 import { setGpuLimits } from "./textures";
+import { THEMES, ThemeContext } from "./theme";
+import type { BoardId } from "../../shared/protocol";
 import { sfx } from "../sfx";
 
 export interface WorldProps {
   mode: "attract" | "lobby" | "game";
+  /** Which edition of the board to draw. */
+  board?: BoardId;
   quality: Quality;
   director?: Director;
   pawns: PawnInfo[];
@@ -49,11 +53,11 @@ export default function World(props: WorldProps) {
   );
 }
 
-function Scene({ mode, quality, director, pawns, you, pickable, onPick, traps, decks, autoCam, recenter }: WorldProps) {
+function Scene({ mode, board, quality, director, pawns, you, pickable, onPick, traps, decks, autoCam, recenter }: WorldProps) {
   const post = quality === "high";
   const pawnOf = (id: string) => pawns.find((p) => p.id === id)?.pawn ?? "hot-purple";
   return (
-    <>
+    <ThemeContext.Provider value={THEMES[board ?? "standard"]}>
       <color attach="background" args={["#05010f"]} />
       <fog attach="fog" args={["#120428", 90, 260]} />
       <Sky quality={quality} />
@@ -73,7 +77,7 @@ function Scene({ mode, quality, director, pawns, you, pickable, onPick, traps, d
           <Vignette eskil={false} offset={0.25} darkness={0.65} />
         </EffectComposer>
       )}
-    </>
+    </ThemeContext.Provider>
   );
 }
 

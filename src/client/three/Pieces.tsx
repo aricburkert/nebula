@@ -6,6 +6,7 @@ import { ART_H, ART_W, PX, TRACK_H, toWorld } from "./coords";
 import { cutOut, imageTexture, type CutOut } from "./textures";
 import { useAsset } from "./useAsset";
 import { fx } from "./Particles";
+import { useTheme, type Theme } from "./theme";
 
 /**
  * The board's illustrations, standing up off the board like a pop-up book: die-cut cardboard pieces
@@ -15,7 +16,7 @@ type Box = [number, number, number, number];
 const PIECE = art.pieces as unknown as Record<string, { box: Box }>;
 
 interface Idle {
-  (t: number, g: THREE.Group, ctx: { base: THREE.Vector3; w: number; h: number; lean: number }): void;
+  (t: number, g: THREE.Group, ctx: { base: THREE.Vector3; w: number; h: number; lean: number; theme: Theme }): void;
 }
 interface PieceCfg {
   name: string;
@@ -49,16 +50,17 @@ const PIECES: PieceCfg[] = [
   {
     name: "cannon",
     lean: 0.18,
-    idle: (t, g, { w, h }) => {
-      // Every few seconds the cannon kicks back and puffs smoke.
+    idle: (t, g, { w, h, theme }) => {
+      // Every few seconds the cannon kicks back and puffs smoke (or, in space, fires its ray).
       const k = t % 7;
       g.position.x = k < 0.5 ? -Math.sin((k / 0.5) * Math.PI) * 0.35 : 0;
       g.rotation.z = k < 0.5 ? Math.sin((k / 0.5) * Math.PI) * 0.05 : 0;
       if (k < 0.1 && t - smokeAt > 1) {
         smokeAt = t;
-        const at = artPoint(g, w, h, 0.78, 0.4);
-        fx.burst({ at, count: 26, color: ["#ffffff", "#dfe6f0", "#c9d2de"], speed: [0.5, 1.8], dir: new THREE.Vector3(1.4, 0.6, 0), life: [0.9, 1.8], size: [0.5, 1.1], drag: 1.2, gravity: -0.4, additive: false });
-        fx.burst({ at, count: 12, color: ["#ffcf3a", "#ff7a1a"], speed: [1, 3], dir: new THREE.Vector3(2, 0.4, 0), life: [0.2, 0.45], size: [0.3, 0.6] });
+        const c = theme.fx.cannon;
+        const at = artPoint(g, w, h, c.muzzle[0], c.muzzle[1]);
+        fx.burst({ at, count: 26, color: c.colors, speed: [0.5, 1.8], dir: new THREE.Vector3(1.4, 0.6, 0), life: [0.9, 1.8], size: [0.5, 1.1], drag: 1.2, gravity: -0.4, additive: c.additive });
+        fx.burst({ at, count: 12, color: c.flash, speed: [1, 3], dir: new THREE.Vector3(2, 0.4, 0), life: [0.2, 0.45], size: [0.3, 0.6] });
       }
     },
   },
@@ -69,14 +71,15 @@ const PIECES: PieceCfg[] = [
     name: "dragon",
     lean: 0.22,
     lift: 0.4,
-    idle: (t, g, { w, h }) => {
+    idle: (t, g, { w, h, theme }) => {
       g.position.y = Math.sin(t * 1.5) * 0.25;
       const breathe = 1 + Math.sin(t * 2.2) * 0.025;
       g.scale.set(1 / breathe, breathe, 1);
       const k = t % 9;
       if (k < 1.2 && t - fireAt > 0.06) {
         fireAt = t;
-        fx.burst({ at: artPoint(g, w, h, 0.1, 0.4), count: 8, color: ["#ffe14d", "#ff9a1a", "#ff3b1a"], speed: [2.5, 4.5], dir: new THREE.Vector3(-3.2, -0.5, 0.6), spread: 0.4, life: [0.35, 0.7], size: [0.4, 0.9], drag: 0.8, gravity: -1.5 });
+        const d = theme.fx.dragon;
+        fx.burst({ at: artPoint(g, w, h, d.mouth[0], d.mouth[1]), count: 8, color: d.colors, speed: [2.5, 4.5], dir: new THREE.Vector3(-3.2, -0.5, 0.6), spread: 0.4, life: [0.35, 0.7], size: [0.4, 0.9], drag: 0.8, gravity: -1.5 });
       }
     },
   },
@@ -84,10 +87,10 @@ const PIECES: PieceCfg[] = [
   {
     name: "recovery",
     lean: 0.2,
-    idle: (t, g, { w, h }) => {
+    idle: (t, g, { w, h, theme }) => {
       if (t - emberAt > 0.12) {
         emberAt = t;
-        fx.burst({ at: artPoint(g, w, h, 0.1, 0.55), count: 2, color: ["#ffd23a", "#ff6a1a"], speed: [0.2, 0.6], dir: new THREE.Vector3(0, 1.4, 0), spread: 0.5, life: [0.6, 1.2], size: [0.12, 0.25], drag: 0.5 });
+        fx.burst({ at: artPoint(g, w, h, 0.1, 0.55), count: 2, color: theme.fx.embers, speed: [0.2, 0.6], dir: new THREE.Vector3(0, 1.4, 0), spread: 0.5, life: [0.6, 1.2], size: [0.12, 0.25], drag: 0.5 });
       }
     },
   },
@@ -111,8 +114,9 @@ export function Pieces({ intro = 0, flatTitle = false }: { intro?: number; flatT
 }
 
 function useCut(name: string, opts?: Parameters<typeof cutOut>[3]) {
-  const [, , w, h] = PIECE[name].box;
-  return useAsset(() => cutOut(`/assets/board3d/pieces/${name}.svg`, w, h, opts), `${name}:${JSON.stringify(opts)}`);
+  const theme = useTheme();
+  const [, , w, h] = theme.pieces[name].box;
+  return useAsset(() => cutOut(`${theme.pieceDir}/${name}.svg`, w, h, opts), `${theme.id}:${name}:${JSON.stringify(opts)}`);
 }
 
 /** Layers of the cut-out stacked behind each other give the piece its cardboard thickness. */
@@ -142,11 +146,12 @@ const easeOutBack = (x: number) => {
 };
 
 function Standee({ cfg, delay }: { cfg: PieceCfg; delay: number }) {
+  const theme = useTheme();
   const cut = useCut(cfg.name);
   const hinge = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const born = useRef<number | null>(null);
-  const [bx, by, bw, bh] = PIECE[cfg.name].box;
+  const [bx, by, bw, bh] = theme.pieces[cfg.name].box;
   const s = (cfg.scale ?? 1) * PX;
   const [dx, dy] = cfg.shift ?? [0, 0];
   const base = useMemo(() => toWorld(bx + bw / 2 + dx, by + bh + dy, (cfg.lift ?? 0) + TRACK_H * 0.5), [bx, by, bw, bh, dx, dy, cfg.lift]);
@@ -160,7 +165,7 @@ function Standee({ cfg, delay }: { cfg: PieceCfg; delay: number }) {
     const up = easeOutBack(k);
     hinge.current.rotation.x = -Math.PI / 2 + (Math.PI / 2 - cfg.lean) * up;
     hinge.current.visible = t > -0.05;
-    cfg.idle?.(clock.elapsedTime, inner.current, { base, w: cut.width * s, h: cut.height * s, lean: cfg.lean });
+    cfg.idle?.(clock.elapsedTime, inner.current, { base, w: cut.width * s, h: cut.height * s, lean: cfg.lean, theme });
   });
 
   if (!cut) return null;
@@ -183,10 +188,11 @@ function Standee({ cfg, delay }: { cfg: PieceCfg; delay: number }) {
 
 /** The game's title, floating over the middle of the board. */
 function Title({ delay, flat }: { delay: number; flat: boolean }) {
+  const theme = useTheme();
   const cut = useCut("title", { border: 18, edgeColor: "#3b0a6e" });
   const ref = useRef<THREE.Group>(null);
   const born = useRef<number | null>(null);
-  const [bx, by, bw, bh] = PIECE.title.box;
+  const [bx, by, bw, bh] = theme.pieces.title.box;
   useFrame(({ clock }) => {
     if (!ref.current || !cut) return;
     if (born.current === null) born.current = clock.elapsedTime;
@@ -217,8 +223,9 @@ function Title({ delay, flat }: { delay: number; flat: boolean }) {
 
 /** The NEBULA: the printed vortex, swirling. */
 function Vortex() {
-  const [bx, by, bw, bh] = PIECE.vortex.box;
-  const tex = useAsset(() => imageTexture(`/assets/board3d/pieces/vortex.svg`, 1.5), "vortex");
+  const theme = useTheme();
+  const [bx, by, bw, bh] = theme.pieces.vortex.box;
+  const tex = useAsset(() => imageTexture(`${theme.pieceDir}/vortex.svg`, 1.5), `vortex:${theme.id}`);
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
