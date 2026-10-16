@@ -95,8 +95,8 @@ const PIECES: PieceCfg[] = [
     },
   },
   { name: "troll", lean: 0.16, idle: both(sway(1.6, 0.05), bob(3.2, 0.05)) },
-  { name: "nebula-woman", lean: 0.2, scale: 0.78, shift: [-20, 80], idle: both(sway(2.4, 0.12), bob(1.8, 0.15)) },
-  { name: "nebula-man", lean: 0.2, scale: 0.78, shift: [0, 60], idle: both(sway(2.0, 0.1, 2), bob(1.6, 0.15, 1)) },
+  { name: "nebula-woman", lean: 0.2, scale: 0.78, shift: [-20, 80], lift: TRACK_H * 0.55, idle: both(sway(2.4, 0.12), bob(1.8, 0.15)) },
+  { name: "nebula-man", lean: 0.2, scale: 0.78, shift: [0, 60], lift: TRACK_H * 0.55, idle: both(sway(2.0, 0.1, 2), bob(1.6, 0.15, 1)) },
   { name: "start-text", lean: 0.95, lift: 0.06, idle: (t, g) => g.scale.setScalar(1 + Math.sin(t * 2) * 0.025) },
   { name: "finish-text", lean: 0.6, lift: 0.06, shift: [0, -250], idle: (t, g) => g.scale.setScalar(1 + Math.sin(t * 2 + 1) * 0.025) },
 ];
@@ -189,7 +189,7 @@ function Standee({ cfg, delay }: { cfg: PieceCfg; delay: number }) {
 /** The game's title, floating over the middle of the board. */
 function Title({ delay, flat }: { delay: number; flat: boolean }) {
   const theme = useTheme();
-  const cut = useCut("title", { border: 18, edgeColor: "#3b0a6e" });
+  const cut = useCut("title", { border: 7, edgeColor: "#3b0a6e" });
   const ref = useRef<THREE.Group>(null);
   const born = useRef<number | null>(null);
   const [bx, by, bw, bh] = theme.pieces.title.box;
@@ -262,7 +262,8 @@ function Vortex() {
     if (light.current) light.current.intensity = 14 + Math.sin(clock.elapsedTime * 2.2) * 5;
   });
   if (tex && mat.uniforms.uMap.value !== tex) mat.uniforms.uMap.value = tex;
-  const c = toWorld(bx + bw / 2, by + bh / 2, 0.03);
+  // Sits on top of the raised path, like the printed art that spills over the NEBULA space.
+  const c = toWorld(bx + bw / 2, by + bh / 2, TRACK_H + 0.015);
   return (
     <group position={c}>
       {tex && (
@@ -277,7 +278,7 @@ function Vortex() {
 
 export const VORTEX_CENTER = (() => {
   const [bx, by, bw, bh] = PIECE.vortex.box;
-  return toWorld(bx + bw / 2, by + bh * 0.52, 0.05);
+  return toWorld(bx + bw / 2, by + bh * 0.52, TRACK_H + 0.05);
 })();
 export const VORTEX_SIZE = { w: PIECE.vortex.box[2] * PX, h: PIECE.vortex.box[3] * PX };
 void ART_W;

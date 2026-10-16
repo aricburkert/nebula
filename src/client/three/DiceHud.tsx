@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Hud, PerspectiveCamera, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import type { Director, DirectorSnapshot } from "./director";
 import { dieFace, imageTexture } from "./textures";
 import { useAsset } from "./useAsset";
@@ -55,6 +56,8 @@ function Dice({ roll, director, color }: { roll: NonNullable<DirectorSnapshot["r
       }),
     [roll, n, gap, color],
   );
+  // A real box (six material groups, +z toward the camera); drei's RoundedBox only has caps and sides.
+  const geo = useMemo(() => new RoundedBoxGeometry(size, size, size, 4, size * 0.16), [size]);
   const refs = useRef<(THREE.Group | null)[]>([]);
   const hit = useRef(0);
   useEffect(() => sfx.diceShake(), []);
@@ -85,7 +88,7 @@ function Dice({ roll, director, color }: { roll: NonNullable<DirectorSnapshot["r
     <>
       {dice.map((d, i) => (
         <group key={i} ref={(el) => (refs.current[i] = el)}>
-          <RoundedBox args={[size, size, size]} radius={size * 0.16} smoothness={4} material={d.mats} />
+          <mesh geometry={geo} material={d.mats} />
         </group>
       ))}
     </>

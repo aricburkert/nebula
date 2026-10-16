@@ -63,6 +63,11 @@ export type Prompt = PromptBase &
 
 export type PromptKind = Prompt["kind"];
 
+/** The one option on the "read your card" pause after drawing an Action card. */
+export const CARD_PAUSE = "continue";
+export const isCardPause = (p: Prompt | null | undefined): p is Extract<Prompt, { kind: "choose" }> =>
+  !!p && p.kind === "choose" && p.options.length === 1 && p.options[0].id === CARD_PAUSE;
+
 export type Answer =
   | { action: "draw" }
   | { action: "play"; card: number }

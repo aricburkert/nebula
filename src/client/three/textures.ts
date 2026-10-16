@@ -86,7 +86,7 @@ export function cutOut(url: string, artW: number, artH: number, opts: { scale?: 
   if (hit) return hit;
   hit = (async () => {
     const img = await loadImage(url);
-    const border = opts.border ?? Math.max(6, Math.min(artW, artH) * 0.025);
+    const border = opts.border ?? Math.max(2.5, Math.min(artW, artH) * 0.008);
     const scale = Math.min(opts.scale ?? 1.6, 2048 / (artW + border * 2), 2048 / (artH + border * 2));
     const W = (artW + border * 2) * scale;
     const H = (artH + border * 2) * scale;

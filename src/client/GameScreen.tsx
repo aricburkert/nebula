@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { GameView } from "../engine/game";
 import type { ChatMessage, RoomInfo } from "../shared/protocol";
+import { CARD_PAUSE, isCardPause } from "../engine/types";
 import { Board } from "./Board";
 import { PromptPanel } from "./PromptPanel";
 import { CARD_TEXT, PASSIVE_HINT, SPINNER, cardAlt, cardSrc, cardTitle } from "./cards";
@@ -88,7 +89,14 @@ export function GameScreen({ conn, room, game }: Props) {
         <TurnBanner snap={snap} names={names} you={conn.you} />
         <RollCaption snap={snap} names={names} />
         <ActiveCard game={game} names={names} />
-        <CardReveal snap={snap} names={names} fromDeck={settings.gl} />
+        <CardReveal
+          snap={snap}
+          names={names}
+          fromDeck={settings.gl}
+          pause={isCardPause(pending) && game.active ? { id: pending.id, player: pending.player, card: game.active.card } : null}
+          you={conn.you}
+          onContinue={(id) => conn.send({ t: "answer", promptId: id, answer: { choice: CARD_PAUSE } })}
+        />
 
         <div className={`side ${drawer ? "open" : ""} ${sideMin ? "min" : ""}`}>
           <div className="tabs">
@@ -282,10 +290,25 @@ function RollCaption({ snap, names }: { snap: DirectorSnapshot; names: Map<strin
 }
 
 /** A card flips up big in the middle of the screen, then tucks into the corner. */
-function CardReveal({ snap, names, fromDeck }: { snap: DirectorSnapshot; names: Map<string, string>; fromDeck: boolean }) {
+function CardReveal({
+  snap,
+  names,
+  fromDeck,
+  pause,
+  you,
+  onContinue,
+}: {
+  snap: DirectorSnapshot;
+  names: Map<string, string>;
+  fromDeck: boolean;
+  pause: { id: number; player: string; card: number } | null;
+  you: string | null;
+  onContinue: (promptId: number) => void;
+}) {
   const card = snap.card;
   const [gone, setGone] = useState<number | null>(null);
   const [phase, setPhase] = useState<"in" | "out">("in");
+  const [sent, setSent] = useState<number | null>(null);
   // With the 3D scene, the card flies up off its deck first; this overlay takes over once it arrives.
   const landed = !fromDeck || (card && snap.landed === card.id);
   const [late, setLate] = useState<number | null>(null);
@@ -295,18 +318,27 @@ function CardReveal({ snap, names, fromDeck }: { snap: DirectorSnapshot; names: 
     return () => clearTimeout(t);
   }, [card, fromDeck]);
   const showing = !!card && (landed || late === card.id);
+  // An Action card stays up until whoever drew it presses Continue.
+  const holding = !!card && !!pause && card.deck === "A" && card.player === pause.player && card.card === pause.card;
+  const held = useRef<number | null>(null);
+  if (holding && card) held.current = card.id;
   useEffect(() => {
     if (!card || !showing) return;
-    setPhase("in");
-    const t = setTimeout(() => setPhase("out"), 3000);
-    const u = setTimeout(() => setGone(card.id), 3700);
+    if (holding) {
+      setPhase("in");
+      return;
+    }
+    const wasHeld = held.current === card.id;
+    const t = setTimeout(() => setPhase("out"), wasHeld ? 0 : 3000);
+    const u = setTimeout(() => setGone(card.id), wasHeld ? 700 : 3700);
     return () => (clearTimeout(t), clearTimeout(u));
-  }, [card, showing]);
+  }, [card, showing, holding]);
   if (!card || gone === card.id || !showing) return null;
   const who = card.player ? names.get(card.player) : null;
   const verb = /played/.test(card.text) ? "played" : /drew/.test(card.text) ? "drew" : null;
+  const mine = holding && !!pause && pause.player === you;
   return (
-    <div className={`reveal ${phase} ${fromDeck ? "landed" : ""}`} onClick={() => setPhase("out")}>
+    <div className={`reveal ${phase} ${fromDeck ? "landed" : ""} ${holding ? "holding" : ""}`} onClick={() => !mine && setPhase("out")}>
       <div className="reveal-card" key={card.id}>
         <div className="reveal-face reveal-front">
           <img src={cardSrc(card.card)} alt={cardAlt(card.card)} />
@@ -316,6 +348,23 @@ function CardReveal({ snap, names, fromDeck }: { snap: DirectorSnapshot; names: 
         </div>
       </div>
       <div className="reveal-caption">{who && verb ? `${who} ${verb} ${cardTitle(card.card)}` : card.text}</div>
+      {holding && pause &&
+        (mine ? (
+          <button
+            className="btn big reveal-continue"
+            disabled={sent === pause.id}
+            autoFocus
+            onClick={(e) => {
+              e.stopPropagation();
+              setSent(pause.id);
+              onContinue(pause.id);
+            }}
+          >
+            Continue
+          </button>
+        ) : (
+          <div className="reveal-wait">Waiting for {names.get(pause.player)} to continue…</div>
+        ))}
     </div>
   );
 }

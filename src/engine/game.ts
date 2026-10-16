@@ -1,6 +1,7 @@
 import cardsData from "../../data/cards.json";
 import { BOARDS, type Board, colorAt, nebulaExit, progress, space, spacesOfType, stepBack, typeAt } from "./board";
 import { Rng } from "./rng";
+import { CARD_PAUSE } from "./types";
 import type {
   Answer,
   Color,
@@ -55,6 +56,8 @@ export interface GameConfig {
   players: { id: string; name: string; pawn: string }[];
   settings: Settings;
   board?: string;
+  /** Wait for the player to press Continue after an Action card is drawn. Off for games saved before it existed. */
+  cardPause?: boolean;
 }
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
@@ -375,6 +378,9 @@ export class Game {
     const p = this.player(pid);
     this.state.active = { card, deck: "A", player: pid };
     this.log(stop(`${p.name} drew ${cardName(card)}`), { player: pid, card: { id: card, deck: "A" } });
+    if (this.config.cardPause) {
+      await this.ask({ kind: "choose", player: pid, title: cardName(card), text: "Read the card, then continue.", options: [{ id: CARD_PAUSE, label: "Continue" }] });
+    }
     const script = CARD_SCRIPTS[card];
     let keep = false;
     if (script) {

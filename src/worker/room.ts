@@ -2,7 +2,7 @@ import { DurableObject } from "cloudflare:workers";
 import { Game, type GameConfig } from "../engine/game";
 import { botInput, promptPlayers } from "../engine/bot";
 import { Rng } from "../engine/rng";
-import type { Input } from "../engine/types";
+import { isCardPause, type Input } from "../engine/types";
 import { isBoard, MAX_PLAYERS, pawnOnBoard, pawnsFor, PAWNS, type BoardId, type ChatMessage, type ClientMsg, type RoomInfo, type ServerMsg } from "../shared/protocol";
 
 interface Member {
@@ -30,6 +30,8 @@ const ABSENT_BOT_MS = 20_000;
 const CHAT_KEEP = 100;
 // Long enough for the dice to land and the pawn to finish hopping before the next move.
 const BOT_THINK_MS = 2200;
+// Long enough for the card to fly up and for everyone to read a computer player's card.
+const BOT_READ_MS = 5000;
 const BOT_NAMES = ["Robo Rita", "Beep Boop Bob", "Sparky", "Unit 42", "Captain Chip", "Hal 9001", "Gizmo", "Toaster"];
 
 /** One game room. Holds the lobby, the chat and the authoritative game, rebuilt from its input log after a restart. */
@@ -259,6 +261,7 @@ export class Room extends DurableObject {
       seed,
       settings: this.meta.settings,
       players: this.meta.members.map((m) => ({ id: m.id, name: m.name, pawn: m.pawn })),
+      cardPause: true,
     };
     this.meta.config = config;
     this.meta.phase = "playing";
@@ -324,7 +327,8 @@ export class Room extends DurableObject {
     const waiting = promptPlayers(p);
     if (waiting.some((pl) => bots.has(pl))) {
       // Computer players answer after a short pause so people can follow along; in a race they need time to "add up".
-      const delay = p.kind === "race" ? 3000 + Math.random() * 4000 : p.kind === "timer" ? Math.min(p.seconds * 1000, 4000) : BOT_THINK_MS;
+      const delay =
+        p.kind === "race" ? 3000 + Math.random() * 4000 : p.kind === "timer" ? Math.min(p.seconds * 1000, 4000) : isCardPause(p) ? BOT_READ_MS : BOT_THINK_MS;
       this.timers.push(setTimeout(() => this.serialize(() => (stillPending() ? this.botMove(undefined, bots) : undefined)), delay));
     }
     const online = new Set([...this.sockets.values()].map((c) => c.player).filter(Boolean));
