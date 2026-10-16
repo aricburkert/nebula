@@ -5,6 +5,7 @@ import * as THREE from "three";
 import type { Director, DirectorSnapshot } from "./director";
 import { dieFace, imageTexture } from "./textures";
 import { useAsset } from "./useAsset";
+import { useTheme } from "./theme";
 import { pawnColor } from "./coords";
 import { sfx } from "../sfx";
 
@@ -93,7 +94,8 @@ function Dice({ roll, director, color }: { roll: NonNullable<DirectorSnapshot["r
 
 function Spinner({ spin, director }: { spin: NonNullable<DirectorSnapshot["spin"]>; director: Director }) {
   const { halfH, small } = useLayout();
-  const tex = useAsset(() => imageTexture("/assets/spinner/standard.svg", 0.45), "spinner");
+  const theme = useTheme();
+  const tex = useAsset(() => imageTexture(theme.spinner, theme.spinnerScale), `spinner:${theme.id}`);
   const start = useRef(director.clock);
   const board = useRef<THREE.Group>(null);
   const arrow = useRef<THREE.Group>(null);
