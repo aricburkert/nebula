@@ -1,0 +1,2042 @@
+{
+  "notes": "All 108 cards transcribed verbatim from the card SVGs (text in the files is outlined, so this is the source of truth for card text). deck A = Action, B = Bonus. 'online' is the proposed online handling, pending aric's review in docs/card-review.md.",
+  "cards": [
+    {
+      "id": 1,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "A kind wizard picks you up on his broom. Roll 3 DICE to see how far he will take you for a ride.",
+        "Weeee!"
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls 3 dice and moves the player forward by the total.",
+      "asset": "cards/1.svg"
+    },
+    {
+      "id": 2,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Roll 2 DICE. If they are both even numbers, go forward that amount.",
+        "If they are both odd numbers, go back that amount.",
+        "If you get both even and odd numbers, go forward that amount then steal a BONUS CARD from the person on your right."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move",
+        "steal",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls 2 dice, applies the parity rule, and transfers a bonus card from the next player in turn order (\"right\").",
+      "asset": "cards/2.svg"
+    },
+    {
+      "id": 3,
+      "deck": "A",
+      "title": "Dragon Fight!",
+      "sections": [
+        "Move to the DRAGON space and fight the DRAGON. Good luck!"
+      ],
+      "art": "Snarling winged dragon crouching",
+      "tags": [
+        "move",
+        "target-tile",
+        "dragon"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the token to the DRAGON space and runs the standard dragon fight.",
+      "asset": "cards/3.svg"
+    },
+    {
+      "id": 4,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You see your friend being beat up by a big ol’ bully.",
+        "Do you save your friend and collect 2 BONUS CARDS or do you quietly walk by and go +9 spaces?"
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Two-button choice: take 2 bonus cards or move +9.",
+      "asset": "cards/4.svg"
+    },
+    {
+      "id": 5,
+      "deck": "A",
+      "title": "Fire the Cannon!",
+      "sections": [
+        "Spin the SPINNER. Whichever color the arrow lands on, all players on matching spaces are blown back 3 spaces."
+      ],
+      "art": null,
+      "tags": [
+        "spinner",
+        "spinner-color",
+        "target-color",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer spins a virtual color spinner and moves every player on that color back 3.",
+      "asset": "cards/5.svg"
+    },
+    {
+      "id": 6,
+      "deck": "A",
+      "title": "Bacon or Sausage?",
+      "sections": [
+        "What do you like better? Bacon or sausage?",
+        "If bacon, receive 1 BONUS CARD and move +3.",
+        "If sausage, lose 1 BONUS CARD, go back 1, and repent of your sins."
+      ],
+      "art": "Cheering bacon strip with a \"YES\" speech bubble",
+      "tags": [
+        "personal-trait",
+        "bonus-card",
+        "move",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "In-game prompt asks the player Bacon or Sausage and applies the matching outcome; answer can be shared in chat.",
+      "asset": "cards/6.svg"
+    },
+    {
+      "id": 7,
+      "deck": "A",
+      "title": "Triple or Nothing!",
+      "sections": [
+        "You can roll 1 DIE and go whatever amount it says.",
+        "Or roll 2 DICE and go even farther, but risk falling into the NEBULA for 1 turn if either of them roll a 1.",
+        "Feeling lucky? Try rolling 4 DICE and go the farthest, but if any roll a 1 you get stuck in the NEBULA for 3 turns and must give all your BONUS CARDS to the player on your right."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move",
+        "nebula",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks 1, 2, or 4 dice; computer rolls and applies movement, NEBULA penalties and card transfer to the next player.",
+      "asset": "cards/7.svg"
+    },
+    {
+      "id": 8,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You rip out a goblin’s eye, then eat it and use its strange powers to add +5 to your next DICE roll.",
+        "Also move +5.",
+        "Or give his eye back and receive 3 BONUS CARDS instead."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "roll-dice",
+        "bonus-card",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice: move +5 plus a +5 modifier stored for the next roll, or take 3 bonus cards.",
+      "asset": "cards/8.svg"
+    },
+    {
+      "id": 9,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Keep this game from being a living nightmare.",
+        "Everyone gets to move +3 right now.",
+        "The NEBULA giveth and taketh away. This time it giveth."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves every player +3.",
+      "asset": "cards/9.svg"
+    },
+    {
+      "id": 10,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Move +7.",
+        "Or save this card to add +3 to your next DICE roll or duel.",
+        "Or collect 1 BONUS CARD right now."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "keep-card",
+        "roll-dice",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Three-way choice: move +7, store a +3 modifier for the next roll/duel, or take a bonus card.",
+      "asset": "cards/10.svg"
+    },
+    {
+      "id": 11,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Move someone from START to your spot and collect a BONUS CARD.",
+        "If there is nobody on START, just go +3."
+      ],
+      "art": null,
+      "tags": [
+        "start",
+        "target-player",
+        "move",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a token on START to pull to their space and gains a bonus card; if START is empty the computer moves them +3.",
+      "asset": "cards/11.svg"
+    },
+    {
+      "id": 12,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Skip across the meadow and move +4.",
+        "Or jump back 3 spaces into the bushes."
+      ],
+      "art": "Grinning man skipping/dancing",
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice between +4 and -3.",
+      "asset": "cards/12.svg"
+    },
+    {
+      "id": 13,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You pluck a golden flower from the fields of magic.",
+        "Collect 2 BONUS CARDS and move +3.",
+        "Or mow the whole field of golden flowers and go +8. You receive no BONUS CARDS for your flower-hating deed."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice: 2 bonus cards and +3, or +8.",
+      "asset": "cards/13.svg"
+    },
+    {
+      "id": 14,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Move to the CANOE.",
+        "Oh no! You fall into the rapids!",
+        "Roll a number higher than 3 to escape the rapids. If not, ride the rapids down to the BOAT."
+      ],
+      "art": "Man paddling a canoe through rapids",
+      "tags": [
+        "move",
+        "target-tile",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the token to the CANOE, rolls a die, and on 1-3 moves it to the BOAT.",
+      "asset": "cards/14.svg"
+    },
+    {
+      "id": 15,
+      "deck": "A",
+      "title": "Power Play!",
+      "sections": [
+        "Force 2 other players to duel each other.",
+        "Winner goes +4. Loser goes back 4.",
+        "Now collect a BONUS CARD and move +1."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "roll-dice",
+        "move",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player selects two opponents, computer runs a dice duel and applies the results, then gives the drawer a bonus card and +1.",
+      "asset": "cards/15.svg"
+    },
+    {
+      "id": 16,
+      "deck": "A",
+      "title": "The Stars Align.",
+      "sections": [
+        "Move to the nearest star and gaze at its beauty.",
+        "Or blow up the stars for a chance to go +8 by rolling a 2, 4, or 6."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-tile",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice: computer moves to the nearest star space, or rolls a die and moves +8 on an even result.",
+      "asset": "cards/16.svg"
+    },
+    {
+      "id": 17,
+      "deck": "A",
+      "title": "Oh Crap! Bear Attack!",
+      "sections": [
+        "Fight the hungry bear by rolling a 2, 4, or 6.",
+        "Win? Nice! Now move to the DRAGON and fight!",
+        "If you lose against the bear, you are eaten and pooped out into the NEBULA for 1 turn.",
+        "You got this!"
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "dragon",
+        "nebula",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls; even sends the player to the DRAGON fight, odd puts them in the NEBULA for 1 turn.",
+      "asset": "cards/17.svg"
+    },
+    {
+      "id": 18,
+      "deck": "A",
+      "title": "Down On Your luck?",
+      "sections": [
+        "Collect a BONUS CARD and spin the SPINNER for some good luck.",
+        "Or move to the nearest SAFE SPOT ahead of you.",
+        "Your choice."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "spinner",
+        "move",
+        "target-tile"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice: bonus card plus a virtual spinner spin, or move to the next SAFE SPOT.",
+      "asset": "cards/18.svg"
+    },
+    {
+      "id": 19,
+      "deck": "A",
+      "title": "Dance Off!",
+      "sections": [
+        "Choose another player to have a 30 second dance-off with.",
+        "The other players judge the dancers and hold a vote. Whoever wins the dance-off goes +11 and collects a BONUS CARD. Loser goes back 2.",
+        "If you choose not to dance, skip your next turn, you coward."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "performance",
+        "physical-dexterity",
+        "timer",
+        "vote",
+        "move",
+        "bonus-card"
+      ],
+      "online": "video-call",
+      "onlineNote": "Needs players to see each other dance on a video call; the game can run the 30-second timer and the vote, with the decline option as a skip-turn button.",
+      "asset": "cards/19.svg"
+    },
+    {
+      "id": 20,
+      "deck": "A",
+      "title": "2 + 3 + 4 - 5 = 4.",
+      "sections": [
+        "Basically just go +4. Math sucks."
+      ],
+      "art": "Exploding math worksheet reading \"Solve: x2+3=y\" with \"MATH SUCKS\" scrawled in red",
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the player +4.",
+      "asset": "cards/20.svg"
+    },
+    {
+      "id": 21,
+      "deck": "A",
+      "title": "It’s Spinner Time!",
+      "sections": [
+        "Put the SPINNER in the middle of all the players.",
+        "Now spin the SPINNER and see who the arrow points at.",
+        "Exchange places on the board with that player."
+      ],
+      "art": null,
+      "tags": [
+        "spinner",
+        "target-player",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer randomly picks a player (virtual spinner pointing) and swaps board positions with them.",
+      "asset": "cards/21.svg"
+    },
+    {
+      "id": 22,
+      "deck": "A",
+      "title": "Spaceship Rescue!",
+      "sections": [
+        "If you choose to rescue any players stuck in the NEBULA, you get to move +7.",
+        "Or you can leave them to drift eternally in the inky blackness of the NEBULA and move +2. You monster.",
+        "Nobody in the NEBULA? There is now! Go to the NEBULA."
+      ],
+      "art": null,
+      "tags": [
+        "nebula",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "If NEBULA has players, choice to rescue (+7) or leave them (+2); if empty, computer sends the drawer to the NEBULA.",
+      "asset": "cards/22.svg"
+    },
+    {
+      "id": 23,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Move +3 or +5.",
+        "Or slither around like a sneaky snake to the nearest BONUS CARD spot that is ahead of you.",
+        "If you choose the snake option, you must hiss like a sneaky snake as you slither across the board.",
+        "Hissss…"
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-tile",
+        "bonus-card",
+        "performance",
+        "speaking",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "Choice of +3, +5, or move to the next BONUS CARD space; the snake option prompts the player to post a hiss in chat.",
+      "asset": "cards/23.svg"
+    },
+    {
+      "id": 24,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Woah! I bet you didn’t think this card existed!",
+        "Move +10.",
+        "Keep this card though, because the next time you roll a 3, you have to blast your butt off into space to meet the NEBULA face to face."
+      ],
+      "art": "Two panicked people being sucked into a swirling nebula vortex",
+      "tags": [
+        "move",
+        "keep-card",
+        "trap",
+        "roll-dice",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves +10 and attaches a trap that sends the player to the NEBULA on their next roll of 3.",
+      "asset": "cards/24.svg"
+    },
+    {
+      "id": 25,
+      "deck": "A",
+      "title": "You Win!",
+      "sections": [
+        "Well, maybe. You didn’t think it would be that easy did you?",
+        "If you can roll a 6 three times in a row, you win the game!",
+        "But be careful, if you roll a 3 on any DIE, you have to go back 1 space."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls up to three times, declares a win on three 6s, and moves back 1 for each 3.",
+      "asset": "cards/25.svg"
+    },
+    {
+      "id": 26,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Move +5.",
+        "Or send another player back 1 space.",
+        "Or collect a BONUS CARD.",
+        "Or fire the CANNON by spinning the SPINNER and blasting any player on that color spot back 2 spaces.",
+        "Or punch the player next to you and suffer the consequences."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-player",
+        "bonus-card",
+        "spinner",
+        "spinner-color",
+        "target-color"
+      ],
+      "online": "as-is",
+      "onlineNote": "Menu of choices run by the computer; the joke 'punch' option can be shown as flavor or dropped online.",
+      "asset": "cards/26.svg"
+    },
+    {
+      "id": 27,
+      "deck": "A",
+      "title": "Sweet Guitar Melody!",
+      "sections": [
+        "Roll a 2, 4, or 6 to begin playing a sweet dream-like melody, putting all of the other players to sleep for 2 turns.",
+        "If you don’t roll a 2, 4, or 6, you put yourself to sleep for 2 turns."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls; even makes all other players skip 2 turns, odd makes the drawer skip 2 turns.",
+      "asset": "cards/27.svg"
+    },
+    {
+      "id": 28,
+      "deck": "A",
+      "title": "Your Good Turn Daily!",
+      "sections": [
+        "Save someone from the NEBULA, move +5. For each person you save from the NEBULA, add +1 to the above number. Doing good things is rewarding isn’t it?",
+        "Choose not to save anyone, move +2 you dirty rat.",
+        "Or how about going to the NEBULA to see it for yourself. Our treat."
+      ],
+      "art": null,
+      "tags": [
+        "nebula",
+        "move",
+        "target-player"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks which NEBULA players to rescue (move +5, +1 per extra), rescue nobody (+2), or go to the NEBULA.",
+      "asset": "cards/28.svg"
+    },
+    {
+      "id": 29,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You find a magical pink fairy in an enchanted forest. She offers to help you on your quest, for a price.",
+        "For every BONUS CARD you give her, she will sprinkle fairy dust on you and fly you +4 spaces. The more BONUS CARDS you give, the farther she will fly you.",
+        "No BONUS CARDS to give? The pink fairy isn’t happy. She flies you back 1 space."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player chooses how many bonus cards to spend (+4 each); with none, computer moves them back 1.",
+      "asset": "cards/29.svg"
+    },
+    {
+      "id": 30,
+      "deck": "A",
+      "title": "Meteorites!",
+      "sections": [
+        "Flaming meteorites come crashing down on all the players.",
+        "Everyone must roll a 1, 2, or 3 to run for cover.",
+        "Anyone hit by a meteorite has to go back 3 spaces."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls for every player and moves those who roll 4-6 back 3.",
+      "asset": "cards/30.svg"
+    },
+    {
+      "id": 31,
+      "deck": "A",
+      "title": "Troll Fight!",
+      "sections": [
+        "A nasty burping troll catches you. His muscles are bulging. He is ready for a fight.",
+        "Move to the TROLL on the bridge and fight!"
+      ],
+      "art": "Muscular troll swinging a large axe",
+      "tags": [
+        "move",
+        "target-tile"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the token to the TROLL space and runs the troll fight.",
+      "asset": "cards/31.svg"
+    },
+    {
+      "id": 32,
+      "deck": "A",
+      "title": "A friendly turtle carries you to the BOAT. How nice of him.",
+      "sections": [
+        "Roll a 2, 4, or 6 to fight the rapids and swim upstream to the CANOE.",
+        "Or ask the turtle to carry you slowly on it’s back +2 spaces. Very slowly."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-tile",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the token to the BOAT, then the player chooses to roll (even moves them to the CANOE) or take +2.",
+      "asset": "cards/32.svg"
+    },
+    {
+      "id": 33,
+      "deck": "A",
+      "title": "Do Something Funny!",
+      "sections": [
+        "You have 30 seconds to do something funny. Tell a joke, fart, or fall on your face. Do whatever it takes to make someone laugh.",
+        "If anyone laughs, you get 2 BONUS CARDS and go +7.",
+        "If nobody laughs, go back 3 spaces and sob into a pillow as you realize just how un-funny you are."
+      ],
+      "art": null,
+      "tags": [
+        "performance",
+        "laughing",
+        "timer",
+        "speaking",
+        "bonus-card",
+        "move",
+        "chat-adaptable"
+      ],
+      "online": "video-call",
+      "onlineNote": "Best on a video call where others can be seen laughing; a text fallback could let the player type a joke in 30 seconds and others vote whether they laughed.",
+      "asset": "cards/33.svg"
+    },
+    {
+      "id": 34,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Go +1.",
+        "Or go +2.",
+        "Or go +3.",
+        "Yay! A decent card. I think?"
+      ],
+      "art": null,
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choice of +1, +2, or +3.",
+      "asset": "cards/34.svg"
+    },
+    {
+      "id": 35,
+      "deck": "A",
+      "title": "Spin The Spinner!",
+      "sections": [
+        "Roll a 1, 2, or 3 to spin the SPINNER once.",
+        "Roll a 4, 5, or 6 to spin the SPINNER twice."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "spinner"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls a die and spins the virtual spinner once (1-3) or twice (4-6).",
+      "asset": "cards/35.svg"
+    },
+    {
+      "id": 36,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You spear a wild hog and harvest its delicious meat.",
+        "Keep up the good work. Move +3.",
+        "You start feeling strong after eating the hog meat. Collect a BONUS CARD."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the player +3 and gives a bonus card.",
+      "asset": "cards/36.svg"
+    },
+    {
+      "id": 37,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Are you addicted to coffee?",
+        "Yes? Go +4 and collect a BONUS CARD.",
+        "No? Why not? Go +1."
+      ],
+      "art": "Frazzled, wide-eyed coffee mug with steam squiggles",
+      "tags": [
+        "move",
+        "bonus-card",
+        "personal-trait"
+      ],
+      "online": "chat",
+      "onlineNote": "Prompt the player with a Yes/No button; the game applies +4 and a bonus card or +1.",
+      "asset": "cards/37.svg"
+    },
+    {
+      "id": 38,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Thank God you are not crippled by being gluten free, move +3.",
+        "If you are gluten sensitive, cry little baby tears of sadness into your dry, tasteless rice cracker crust pizza and then go back 3."
+      ],
+      "art": "Sad man with a tear wearing a 'GLUTEN FREE' shirt",
+      "tags": [
+        "move",
+        "personal-trait"
+      ],
+      "online": "chat",
+      "onlineNote": "Prompt the player to self-declare gluten sensitive or not; the game moves +3 or -3.",
+      "asset": "cards/38.svg"
+    },
+    {
+      "id": 39,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Roll 2 DICE and move.",
+        "Oh look! A cute little cat cuddles up to you and adds +2 to your DICE roll.",
+        "Good kitty!"
+      ],
+      "art": "Cute cat wearing a beanie and scarf",
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll 2 dice, add 2, and move automatically.",
+      "asset": "cards/39.svg"
+    },
+    {
+      "id": 40,
+      "deck": "A",
+      "title": "Slap a Seal!",
+      "sections": [
+        "Roll a 2, 4, or 6 to slap it good. Go +3.",
+        "Or the seal slaps you back 1 space."
+      ],
+      "art": "Angry man slapping a startled seal with a 'SLAP!' burst",
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll one die; even moves +3, odd moves -1.",
+      "asset": "cards/40.svg"
+    },
+    {
+      "id": 41,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Force a player of your choosing to move to your spot.",
+        "Pro Tip: Don't be a goofball and waste this opportunity by being nice.",
+        "Were you nice? Fine. Ok. Let them also move +1 while you're at it."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a target from a list; the target is moved to the player's space, and if that was forward for them they get an extra +1.",
+      "asset": "cards/41.svg"
+    },
+    {
+      "id": 42,
+      "deck": "A",
+      "title": "Hammer Bash!",
+      "sections": [
+        "Use this hammer to bash the toes of your enemies' feet. Choose 2 players who will get their toes bashed.",
+        "Players with bashed toes lose their next turn because they are in terrible pain."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "trap"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player selects 2 opponents in the UI; the game skips their next turns.",
+      "asset": "cards/42.svg"
+    },
+    {
+      "id": 43,
+      "deck": "A",
+      "title": "Stare Contest",
+      "sections": [
+        "Have a 30 second staring contest with another player. First person to smile or laugh loses.",
+        "Winner goes +5. Loser goes -2.",
+        "If it's a tie, both players go back 2."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "timer",
+        "laughing",
+        "move"
+      ],
+      "online": "video-call",
+      "onlineNote": "Needs players to see each other's faces on a video call; the game runs a 30-second timer and the players report the winner or a tie.",
+      "asset": "cards/43.svg"
+    },
+    {
+      "id": 44,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Collect a BONUS CARD and move +3.",
+        "Or forgo the BONUS CARD and go +6.",
+        "Or save this card to add +7 to your next DICE roll or ACTION CARD.",
+        "Your choice."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Three-button choice; the saved option stores a +7 modifier on the player's next roll or action card.",
+      "asset": "cards/44.svg"
+    },
+    {
+      "id": 45,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Roll a DIE. Now move backwards whatever amount it says.",
+        "HA HA HA! Loser!"
+      ],
+      "art": "Grinning man pointing and laughing at a sad, teary man",
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll one die and move back that many spaces.",
+      "asset": "cards/45.svg"
+    },
+    {
+      "id": 46,
+      "deck": "A",
+      "title": "Everyone Judges Your Beard!",
+      "sections": [
+        "Do you have a little baby boy beard? Go +1.",
+        "If you have a respectable gentleman's beard, go +6.",
+        "If you have a beard like a majestic wizard, go +10.",
+        "No beard at all? Go back 2."
+      ],
+      "art": null,
+      "tags": [
+        "personal-trait",
+        "vote",
+        "move",
+        "chat-adaptable"
+      ],
+      "online": "video-call",
+      "onlineNote": "Other players judge the beard on camera and vote a tier; without video the player could self-report the tier in chat.",
+      "asset": "cards/46.svg"
+    },
+    {
+      "id": 47,
+      "deck": "A",
+      "title": "Duel Everyone!",
+      "sections": [
+        "Everybody rolls one DIE. Highest number wins.",
+        "Winner goes +7 and gets to make fun of everyone else for 1 turn."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "The game rolls a die for every player and moves the highest +7 (re-roll ties); the teasing is just flavor.",
+      "asset": "cards/47.svg"
+    },
+    {
+      "id": 48,
+      "deck": "A",
+      "title": "Phone Wars!",
+      "sections": [
+        "Everyone place your phone on the table. Owners of the most represented brand at the table get to go +4.",
+        "Everyone else go -1, unless you have a flip phone.",
+        "If you have a flip phone, go to the NEBULA right now!"
+      ],
+      "art": null,
+      "tags": [
+        "real-world-object",
+        "personal-trait",
+        "move",
+        "nebula"
+      ],
+      "online": "chat",
+      "onlineNote": "Every player picks their phone brand (or flip phone) in a prompt; the game counts the brands and applies +4, -1 or the NEBULA.",
+      "asset": "cards/48.svg"
+    },
+    {
+      "id": 49,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Stink Boy asks you for directions. You oblige him. He gives you motivation with a smile.",
+        "Take a happy skipperoo and move +2.",
+        "Or take a deep breath in of his stink and go +5."
+      ],
+      "art": "Grinning, smelly man with stink lines and a polka-dot shirt",
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Two-button choice: +2 or +5.",
+      "asset": "cards/49.svg"
+    },
+    {
+      "id": 50,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "The Moon dips behind the clouds.",
+        "Go +1.",
+        "Or swat the clouds away and let the Moon do its thing and go +3."
+      ],
+      "art": null,
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Two-button choice: +1 or +3.",
+      "asset": "cards/50.svg"
+    },
+    {
+      "id": 51,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "A harsh winter storm moves in. Collect a warm BONUS CARD and go +3.",
+        "Or chance the freezing weather by rolling a 2, 4, or 6 to go +8 and also collect a BONUS CARD.",
+        "If you don't roll a 2, 4, or 6, you get frozen in place and your next turn is skipped. Enjoy being an icicle."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move",
+        "roll-dice",
+        "trap"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choose the safe option or the gamble; the gamble rolls a die and either moves +8 with a bonus card or skips the next turn.",
+      "asset": "cards/51.svg"
+    },
+    {
+      "id": 52,
+      "deck": "A",
+      "title": "Fart Challenge.",
+      "sections": [
+        "If you can physically fart right now, in front of the other players, the gasses propel you +16 spaces. You also get 3 BONUS CARDS. Sadly, your dignity can never be recovered.",
+        "If you choose to keep your dignity by not farting, move +2."
+      ],
+      "art": null,
+      "tags": [
+        "performance",
+        "bonus-card",
+        "move"
+      ],
+      "online": "video-call",
+      "onlineNote": "Only checkable by the others on a live audio/video call; otherwise it is honor-system and the +16 option is too easy to abuse.",
+      "asset": "cards/52.svg"
+    },
+    {
+      "id": 53,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You are running in a marathon. You are not doing well.",
+        "Run +5 and finish with dignity.",
+        "Or throw a boulder at a player and break their leg, causing them to stay behind and heal for 2 turns.",
+        "Also go +1 because of your cheating tactics."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-player",
+        "trap"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choose +5, or pick a target who skips 2 turns while the player moves +1.",
+      "asset": "cards/53.svg"
+    },
+    {
+      "id": 54,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "You boldly swing on a vine.",
+        "Uh oh! The vine snaps and you fall down the hill, breaking your arms. Your next turn is skipped as you heal up.",
+        "You receive a get well soon card from your parents. It contains 2 BONUS CARDS."
+      ],
+      "art": null,
+      "tags": [
+        "trap",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "The game skips the player's next turn and gives them 2 bonus cards.",
+      "asset": "cards/54.svg"
+    },
+    {
+      "id": 55,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Impress the other players by showing off your skills.",
+        "Attempt to juggle 3 DICE for 4 seconds, go +7.",
+        "Or balance a DIE on top of your nose for 4 seconds, go +5.",
+        "Or just crack your knuckles to go +1.",
+        "Can't do any of these? Go back 2."
+      ],
+      "art": null,
+      "tags": [
+        "physical-dexterity",
+        "real-world-object",
+        "timer",
+        "move"
+      ],
+      "online": "video-call",
+      "onlineNote": "Players must watch the stunt on camera (with real dice or substitute objects) and confirm which tier succeeded.",
+      "asset": "cards/55.svg"
+    },
+    {
+      "id": 56,
+      "deck": "A",
+      "title": "Ants!",
+      "sections": [
+        "You step on an ant's nest and they chase you +3 spaces.",
+        "Or eat the ants and let their energy propel you +11 spaces, but the next time you roll a 5 during the game, you are dragged back into the ants nest. AKA, the NEBULA.",
+        "Hold onto this card to remind you of your eventual fate."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "keep-card",
+        "nebula",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Choose +3, or +11 plus a stored curse that sends the player to the NEBULA on their next roll of 5.",
+      "asset": "cards/56.svg"
+    },
+    {
+      "id": 57,
+      "deck": "A",
+      "title": "Energy Drink!",
+      "sections": [
+        "You find an energy drink that is 50 years old. THIS THING IS POWERFUL!",
+        "You drink the whole thing and begin to feel unimaginable power course through your pitiful veins.",
+        "Roll 3 DICE and go as far as you can before withdrawal sets in."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll 3 dice and move the total.",
+      "asset": "cards/57.svg"
+    },
+    {
+      "id": 58,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Ask the other players if you spend too much time researching something you want to buy.",
+        "Majority says yes? Go back 1.",
+        "Majority says no? Go +4.",
+        "Do the players not know you well enough to give you an answer? Go back 3 and find some friends.",
+        "Are you just a kid who doesn't have any money? Go +3. You have our sympathy."
+      ],
+      "art": null,
+      "tags": [
+        "vote",
+        "personal-trait",
+        "move"
+      ],
+      "online": "chat",
+      "onlineNote": "Other players vote Yes / No / Don't know in an in-game poll, and the player can claim the 'kid with no money' option.",
+      "asset": "cards/58.svg"
+    },
+    {
+      "id": 59,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "We have seen your future, and boy does it look grim. Move +3.",
+        "Or punch destiny in the mouth and go +7. Nobody tells you what to do!"
+      ],
+      "art": null,
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Two-button choice: +3 or +7.",
+      "asset": "cards/59.svg"
+    },
+    {
+      "id": 60,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "The NEBULA is trying to suck you in with all of your BONUS CARDS! Quick! Roll a 1, 3, 4, or 5 to escape.",
+        "Fail? Go to the NEBULA and return all your BONUS CARDS to the bottom of the deck.",
+        "If you escape, go +4 and collect a BONUS CARD."
+      ],
+      "art": "People being sucked into a swirling vortex",
+      "tags": [
+        "roll-dice",
+        "nebula",
+        "bonus-card",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll one die; a 2 or 6 sends the player to the NEBULA and discards their bonus cards, otherwise +4 and a bonus card.",
+      "asset": "cards/60.svg"
+    },
+    {
+      "id": 61,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "A majestic eagle offers you a ride, for a price.",
+        "Pay the eagle by giving 1 BONUS CARD away to the player on your left.",
+        "For each BONUS CARD you give away, go +4.",
+        "No BONUS CARDS? The eagle poops on your head. Go back 1."
+      ],
+      "art": null,
+      "tags": [
+        "bonus-card",
+        "move",
+        "target-player"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player chooses how many bonus cards to give to the next player in turn order (left = next seat), moves +4 for each, or -1 if they have none.",
+      "asset": "cards/61.svg"
+    },
+    {
+      "id": 62,
+      "deck": "A",
+      "title": "Shrooms!",
+      "sections": [
+        "Everyone gets the power of weird addicting mushrooms!",
+        "Everyone adds +2 to their next DICE roll or ACTION CARD."
+      ],
+      "art": "Wild-eyed grinning man surrounded by mushrooms",
+      "tags": [
+        "roll-dice",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Give every player a +2 modifier on their next roll or action card.",
+      "asset": "cards/62.svg"
+    },
+    {
+      "id": 63,
+      "deck": "A",
+      "title": "Photo Text Challenge!",
+      "sections": [
+        "Choose a player to duel. Roll DICE to see who wins.",
+        "Winner gets to send a photo of themselves to the last person the loser texted. Also go +2 or +5.",
+        "If the loser doesn't allow this, they have to sit in silence for 2 turns. If they break their silence, they go to the NEBULA for 1 turn."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "roll-dice",
+        "real-world-object",
+        "move",
+        "speaking",
+        "nebula"
+      ],
+      "online": "remove",
+      "onlineNote": "The core action needs physical access to the loser's phone, which remote players don't have; only the dice duel could be kept.",
+      "asset": "cards/63.svg"
+    },
+    {
+      "id": 64,
+      "deck": "A",
+      "title": "Color Warp!",
+      "sections": [
+        "Warp between the colors on the board.",
+        "Move forward or backwards to the closest space of the same color."
+      ],
+      "art": null,
+      "tags": [
+        "target-color",
+        "target-tile",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "The game finds the nearest space (forward or back) of the current space's color and moves the pawn there; ties go to the player's pick.",
+      "asset": "cards/64.svg"
+    },
+    {
+      "id": 65,
+      "deck": "A",
+      "title": "Card Toss Challenge!",
+      "sections": [
+        "Toss and catch this card using an open palm. If you can catch it, go +7 and collect a BONUS CARD.",
+        "If you drop it, go back 1.",
+        "If you just barely toss it up and catch it like a loser, go back 2.",
+        "Don't be a loser."
+      ],
+      "art": null,
+      "tags": [
+        "physical-dexterity",
+        "real-world-object",
+        "bonus-card",
+        "move"
+      ],
+      "online": "video-call",
+      "onlineNote": "There is no physical card online, so the player would toss a real card or object on camera while the others judge.",
+      "asset": "cards/65.svg"
+    },
+    {
+      "id": 66,
+      "deck": "A",
+      "title": "Take 2 Spins!",
+      "sections": [
+        "Spin the SPINNER twice.",
+        "Good luck on not hitting the NEBULA space."
+      ],
+      "art": null,
+      "tags": [
+        "spinner",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Run the digital spinner twice and resolve both results.",
+      "asset": "cards/66.svg"
+    },
+    {
+      "id": 67,
+      "deck": "A",
+      "title": "Quicksand!",
+      "sections": [
+        "You fall into quicksand because you were too busy texting while walking.",
+        "Yell for help from other players. If they roll a 2 or 4, they collect a BONUS CARD and you go +1. You're saved!",
+        "If unsuccessful, or nobody answers your cries for help, sink all the way back to START."
+      ],
+      "art": null,
+      "tags": [
+        "speaking",
+        "roll-dice",
+        "bonus-card",
+        "move",
+        "start"
+      ],
+      "online": "chat",
+      "onlineNote": "Other players get a 'Help' prompt to roll; any 2 or 4 saves the player (+1, helper gets a bonus card), otherwise the player goes back to START.",
+      "asset": "cards/67.svg"
+    },
+    {
+      "id": 68,
+      "deck": "A",
+      "title": "Dice Adding Challenge!",
+      "sections": [
+        "Roll all 6 DICE. First person to correctly add up all the DICE wins.",
+        "Winner goes +6.",
+        "Everyone else go back 1.",
+        "Be careful though, shouting out a wrong answer will give you a free trip to the NEBULA."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "speaking",
+        "move",
+        "nebula"
+      ],
+      "online": "chat",
+      "onlineNote": "Show 6 dice and run a speed-answer prompt: the first correct typed sum wins +6, wrong answers go to the NEBULA, everyone else -1.",
+      "asset": "cards/68.svg"
+    },
+    {
+      "id": 69,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "The angry troll is trying to catch you with his fishing rod.",
+        "Roll a 2, 4, or 6 to escape his hook.",
+        "Did you escape? Go +3 and celebrate your victory.",
+        "Did he catch you? Go to the TROLL on the bridge and battle him."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "move",
+        "target-tile"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll one die; even moves +3, odd moves the pawn to the TROLL bridge space for the troll battle.",
+      "asset": "cards/69.svg"
+    },
+    {
+      "id": 70,
+      "deck": "A",
+      "title": "Shortcut!",
+      "sections": [
+        "Roll a 2, 4, or 6 to take a shortcut to the closest SAFE ZONE ahead of you.",
+        "If not, stay where you are."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "target-tile",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Roll one die; even moves the pawn to the next SAFE ZONE ahead.",
+      "asset": "cards/70.svg"
+    },
+    {
+      "id": 71,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Take 1 BONUS CARD from another player.",
+        "Or take 1 ACTION CARD from the deck.",
+        "Or just go +7.",
+        "Or go to the NEBULA, and when you get out, go +5."
+      ],
+      "art": null,
+      "tags": [
+        "steal",
+        "bonus-card",
+        "target-player",
+        "move",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Four-option choice: steal a bonus card from a chosen player, draw an action card, +7, or go to the NEBULA with +5 on release.",
+      "asset": "cards/71.svg"
+    },
+    {
+      "id": 72,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Whistle a happy tune and go +3.",
+        "Or whistle a crappy tune and go +1."
+      ],
+      "art": null,
+      "tags": [
+        "performance",
+        "move"
+      ],
+      "online": "video-call",
+      "onlineNote": "Others need to hear the whistling over a call; as honor-system it is just a +3/+1 choice.",
+      "asset": "cards/72.svg"
+    },
+    {
+      "id": 73,
+      "deck": "A",
+      "title": null,
+      "sections": [
+        "Sarcastically encourage each player for the next full turn and go +7.",
+        "Can’t find anything nice to say? Go +1."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "speaking",
+        "performance",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "Player types sarcastic encouragement to each player in chat during the next turn (honor/self-report choice: +7 if done, +1 if not).",
+      "asset": "cards/73.svg"
+    },
+    {
+      "id": 74,
+      "deck": "A",
+      "title": "Dice Stacking Challenge!",
+      "sections": [
+        "Hold all 6 DICE in your hands. Now close your eyes. You have 30 seconds to stack them on top of each other without them falling.",
+        "If success, go +5. Fail? -2.",
+        "Did you open your eyes trying to cheat? Go back to START."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "start",
+        "timer",
+        "physical-dexterity",
+        "real-world-object"
+      ],
+      "online": "video-call",
+      "onlineNote": "Requires stacking real dice blind on camera with others watching; game runs a 30-second timer and players vote success/fail/cheat.",
+      "asset": "cards/74.svg"
+    },
+    {
+      "id": 75,
+      "deck": "A",
+      "title": "Um!",
+      "sections": [
+        "Go +7 and collect a BONUS CARD.",
+        "The next time anyone catches you saying “um” or “like”, you are sent sprawling back into the NEBULA."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "bonus-card",
+        "nebula",
+        "speaking",
+        "listening",
+        "keep-card",
+        "chat-adaptable"
+      ],
+      "online": "video-call",
+      "onlineNote": "+7 and bonus card are automatic, but catching spoken “um”/“like” needs hearing the player on a call (a text version could auto-flag typed “um”/“like” in chat).",
+      "asset": "cards/75.svg"
+    },
+    {
+      "id": 76,
+      "deck": "A",
+      "title": "Generations!",
+      "sections": [
+        "When were you born?",
+        "After 2004? Go back 3, Gen Z.",
+        "1980 - 2004? Go to your safe space for 2 turns, in the NEBULA.",
+        "1960 - 1980? Gen X is ignored, as usual.",
+        "Before 1960? OK Boomer, go +5. You deserve it!"
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "nebula",
+        "personal-trait",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "In-game prompt asks the player to pick their birth-year range, then the computer applies the matching effect.",
+      "asset": "cards/76.svg"
+    },
+    {
+      "id": 77,
+      "deck": "A",
+      "title": "Burp Challenge!",
+      "sections": [
+        "Who can burp the loudest? Everyone has one chance to make the loudest burp.",
+        "Loudest burp goes +6. Lamest burp goes back 2. Middle of the road burps stay where they are."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "performance",
+        "vote"
+      ],
+      "online": "video-call",
+      "onlineNote": "Everyone must hear each burp on a shared call; players then vote loudest and lamest in an in-game poll.",
+      "asset": "cards/77.svg"
+    },
+    {
+      "id": 78,
+      "deck": "A",
+      "title": "Nobody Laugh!",
+      "sections": [
+        "Can you read the following sentences without anyone laughing? Everyone goes +3.",
+        "Did anyone laugh? Everyone goes back 1.",
+        "• The palpable papa ponders paddling properly.\n• Pesky parents properly pursue pepperoni pizza.\n• Popping pickles pleases the palisade pagans.\n• Perfect pictures of pies panics the promiscuous pandering pajama poodles.\n• Painful poo poos placate pangs of poisoned pillaged pesto."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "speaking",
+        "laughing",
+        "performance"
+      ],
+      "online": "video-call",
+      "onlineNote": "Reader must read aloud while others watch/listen for laughter on a video call; result entered as laughed / no laugh.",
+      "asset": "cards/78.svg"
+    },
+    {
+      "id": 79,
+      "deck": "A",
+      "title": "You Win! Well Maybe?",
+      "sections": [
+        "You can win the game right now by moving your pawn to the FINISH space.",
+        "But, you physically have to leave the party, the house, wherever you are and go home. No turning back. No cheating the system. Leave. Goodbye!",
+        "Or move +1."
+      ],
+      "art": null,
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Offer a choice: win instantly but be removed from the game session (leave the call/lobby), or move +1.",
+      "asset": "cards/79.svg"
+    },
+    {
+      "id": 80,
+      "deck": "A",
+      "title": "Hippo Bee Attack!",
+      "sections": [
+        "You are attacked by a swarm of hungry HIPPO BEES.",
+        "Roll a 2, 4, or 6 to swat the HIPPO BEES away and go +4.",
+        "Failure? Nothing but pain."
+      ],
+      "art": "A cartoon hippo with bee wings and a stinger flying with a big grin.",
+      "tags": [
+        "move",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls a die; on 2, 4 or 6 the player moves +4, otherwise nothing.",
+      "asset": "cards/80.svg"
+    },
+    {
+      "id": 81,
+      "deck": "A",
+      "title": "House of Cards!",
+      "sections": [
+        "You have 30 seconds to build this house of cards.",
+        "If you can do this, go +7 and collect a BONUS CARD.",
+        "If you fail, you are a failure. Go -2."
+      ],
+      "art": "A small three-sided house of playing cards with an angry face drawn on one card.",
+      "tags": [
+        "move",
+        "bonus-card",
+        "timer",
+        "physical-dexterity",
+        "real-world-object"
+      ],
+      "online": "video-call",
+      "onlineNote": "Needs real playing cards built on camera within a 30-second in-game timer; others confirm success or failure.",
+      "asset": "cards/81.svg"
+    },
+    {
+      "id": 82,
+      "deck": "A",
+      "title": "High Noon!",
+      "sections": [
+        "Challenge another player to a high stakes duel.",
+        "Both players roll 1 DIE as fast as possible at the same time. First player to roll a 6 shoots the other player out of the saloon and into the NEBULA.",
+        "Winner goes +5 or +7 and collects a BONUS CARD."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "roll-dice",
+        "target-player",
+        "nebula",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks an opponent; computer alternates/simultaneously rolls for both until one hits 6, sends loser to the NEBULA and gives winner the move and bonus card.",
+      "asset": "cards/82.svg"
+    },
+    {
+      "id": 83,
+      "deck": "B",
+      "title": "Steal!",
+      "sections": [
+        "Steal a BONUS CARD or an ACTION CARD from any player at any time. If you steal an ACTION CARD, use it right now.",
+        "If you steal a BONUS CARD, you can use it now or save it for later. Your choice."
+      ],
+      "art": null,
+      "tags": [
+        "steal",
+        "bonus-card",
+        "target-player",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card that can be played any time to pick a player and take one of their cards via UI.",
+      "asset": "cards/83.svg"
+    },
+    {
+      "id": 84,
+      "deck": "B",
+      "title": "Spider Monkey Trap!",
+      "sections": [
+        "Place this card on the board and point it at any spot other than FINISH.",
+        "If any player lands on this spot, your faithful Spider Monkey swipes every BONUS CARD they have and adds +2 to your next dice roll."
+      ],
+      "art": "A solid black triangle pointer at the top of the card.",
+      "tags": [
+        "trap",
+        "target-tile",
+        "steal",
+        "bonus-card",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a tile (not FINISH) to trap; computer transfers the victim’s bonus cards and adds +2 to the owner’s next roll.",
+      "asset": "cards/84.svg"
+    },
+    {
+      "id": 85,
+      "deck": "B",
+      "title": "Shield!",
+      "sections": [
+        "Use this card to shield yourself from any ACTION, BONUS, or gameboard effect on you."
+      ],
+      "art": null,
+      "tags": [
+        "keep-card",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card; game prompts the holder to block whenever an effect targets them.",
+      "asset": "cards/85.svg"
+    },
+    {
+      "id": 86,
+      "deck": "B",
+      "title": "Blow Dart!",
+      "sections": [
+        "Shoot a blow dart into a player’s neck, causing them to fall asleep for 2 turns.",
+        "You can also try rolling a 2, 4, or 6. If successful, steal 1 BONUS CARD from them while they are sleeping. If you fail, your victim wakes back up."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "roll-dice",
+        "steal",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a target who skips 2 turns; optional roll steals a bonus card on 2/4/6 or ends the sleep on failure.",
+      "asset": "cards/86.svg"
+    },
+    {
+      "id": 87,
+      "deck": "B",
+      "title": "Jetpack!",
+      "sections": [
+        "Use the power of a jetpack to roll 3 DICE and see how far you can fly!"
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "roll-dice"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls 3 dice and moves the player the total.",
+      "asset": "cards/87.svg"
+    },
+    {
+      "id": 88,
+      "deck": "B",
+      "title": "Trap Removal!",
+      "sections": [
+        "Use this card to remove any trap placed on the board."
+      ],
+      "art": null,
+      "tags": [
+        "trap",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player selects a placed trap on the board to delete it.",
+      "asset": "cards/88.svg"
+    },
+    {
+      "id": 89,
+      "deck": "B",
+      "title": "Double Double!",
+      "sections": [
+        "Use this card to double the amount on your next DICE roll or duel with another player."
+      ],
+      "art": null,
+      "tags": [
+        "roll-dice",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held modifier that doubles the holder’s next roll or duel roll when played.",
+      "asset": "cards/89.svg"
+    },
+    {
+      "id": 90,
+      "deck": "B",
+      "title": "Don’t Laugh!",
+      "sections": [
+        "Force any player not to laugh for 2 turns. If they laugh, they explode and fly into the NEBULA head first for 2 turns.",
+        "Collect 1 BONUS CARD when they laugh."
+      ],
+      "art": null,
+      "tags": [
+        "target-player",
+        "laughing",
+        "nebula",
+        "bonus-card",
+        "timer"
+      ],
+      "online": "video-call",
+      "onlineNote": "Others must see/hear the target laugh during 2 turns on a video call; a ‘they laughed’ button applies the NEBULA and bonus card.",
+      "asset": "cards/90.svg"
+    },
+    {
+      "id": 91,
+      "deck": "B",
+      "title": "Boat and Canoe!",
+      "sections": [
+        "Send everyone who is in the BOAT or CANOE into the NEBULA for 2 turns."
+      ],
+      "art": "People being sucked into a swirling vortex (the NEBULA), one man flailing with his arm raised.",
+      "tags": [
+        "nebula",
+        "target-tile"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves every pawn on the BOAT or CANOE spaces into the NEBULA for 2 turns.",
+      "asset": "cards/91.svg"
+    },
+    {
+      "id": 92,
+      "deck": "B",
+      "title": "Canceled!",
+      "sections": [
+        "Use this card at any time to cancel any BONUS CARD or ACTION CARD effect on you."
+      ],
+      "art": null,
+      "tags": [
+        "keep-card",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card; game offers to cancel whenever a card effect targets the holder.",
+      "asset": "cards/92.svg"
+    },
+    {
+      "id": 93,
+      "deck": "B",
+      "title": "Spring Trap!",
+      "sections": [
+        "Place this card on the board and point it at any spot other than FINISH.",
+        "Anyone who lands on this spot is flung into the air for you to blast into the NEBULA by rolling a 2, 4, or 6."
+      ],
+      "art": "A solid black triangle pointer at the top of the card.",
+      "tags": [
+        "trap",
+        "target-tile",
+        "roll-dice",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a tile (not FINISH); when triggered, the computer rolls for the owner and sends the victim to the NEBULA on 2/4/6.",
+      "asset": "cards/93.svg"
+    },
+    {
+      "id": 94,
+      "deck": "B",
+      "title": "Warp Speed!",
+      "sections": [
+        "Roll a 1 to warp to the BOAT.",
+        "Roll a 2 to warp to the CANOE.",
+        "Roll a 3 to warp to the DRAGON.",
+        "Roll a 4 to warp to the CANNON.",
+        "Roll a 5 or 6 to warp into the NEBULA. Ha Ha! Even BONUS CARDS aren’t always joyous."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "roll-dice",
+        "dragon",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer rolls a die and teleports the pawn to the matching board location.",
+      "asset": "cards/94.svg"
+    },
+    {
+      "id": 95,
+      "deck": "B",
+      "title": "Backstab!",
+      "sections": [
+        "Stop a player from collecting a BONUS CARD and take it for yourself.",
+        "Pro Tip: For added effect, wait ‘til they pick up the BONUS CARD and read it, then snatch it away from them."
+      ],
+      "art": null,
+      "tags": [
+        "steal",
+        "bonus-card",
+        "target-player",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held reaction card; when another player draws a bonus card the game offers the holder a chance to snatch it.",
+      "asset": "cards/95.svg"
+    },
+    {
+      "id": 96,
+      "deck": "B",
+      "title": "Hang Glider!",
+      "sections": [
+        "Use the hang glider to fly +7 spaces.",
+        "Any player you fly over is pushed back 2 spaces."
+      ],
+      "art": null,
+      "tags": [
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer moves the player +7 and pushes back 2 every pawn passed.",
+      "asset": "cards/96.svg"
+    },
+    {
+      "id": 97,
+      "deck": "B",
+      "title": "Swap!",
+      "sections": [
+        "Choose a player to swap places with.",
+        "Swap all BONUS CARDS with them, too."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-player",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a target; computer swaps positions and bonus-card hands.",
+      "asset": "cards/97.svg"
+    },
+    {
+      "id": 98,
+      "deck": "B",
+      "title": "Nebula Trap!",
+      "sections": [
+        "Place this card on the board and point it at any spot.",
+        "Anyone who lands on this spot is sucked into the NEBULA for one turn."
+      ],
+      "art": "A solid black triangle pointer at the top; below, people being sucked into a swirling NEBULA vortex.",
+      "tags": [
+        "trap",
+        "target-tile",
+        "nebula"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks any tile; whoever lands there is sent to the NEBULA for one turn.",
+      "asset": "cards/98.svg"
+    },
+    {
+      "id": 99,
+      "deck": "B",
+      "title": "My Turn! Your Turn!",
+      "sections": [
+        "Listen carefully. If you hear any player during the game say the words, “my turn” or “your turn” at anytime, you can send them straight back to START.",
+        "Pro Tip: Having trouble catching someone saying these words? Try instigating it by asking “whose turn is it?”",
+        "You’re welcome."
+      ],
+      "art": null,
+      "tags": [
+        "listening",
+        "speaking",
+        "start",
+        "keep-card",
+        "target-player",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "Holder can send anyone who types “my turn” or “your turn” in game chat back to START (the game could auto-detect it); spoken version needs a call.",
+      "asset": "cards/99.svg"
+    },
+    {
+      "id": 100,
+      "deck": "B",
+      "title": "Paddle Paddle Paddle!",
+      "sections": [
+        "This card gives you strong paddling arms.",
+        "If you land on the CANOE spot and lose, use this card to paddle back up the stream and go +1."
+      ],
+      "art": "A man paddling a canoe through splashing rapids.",
+      "tags": [
+        "move",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card auto-offered after losing on the CANOE space to move +1.",
+      "asset": "cards/100.svg"
+    },
+    {
+      "id": 101,
+      "deck": "B",
+      "title": "Freedom!",
+      "sections": [
+        "Get out of the NEBULA for free card!",
+        "Make sure to use your newfound freedom well!"
+      ],
+      "art": null,
+      "tags": [
+        "nebula",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card that releases the holder from the NEBULA when played.",
+      "asset": "cards/101.svg"
+    },
+    {
+      "id": 102,
+      "deck": "B",
+      "title": "Dragon Scales!",
+      "sections": [
+        "This card gives you extra thick armor to battle the DRAGON.",
+        "You get 3 chances to roll to defeat the DRAGON."
+      ],
+      "art": "A snarling winged dragon crouched low.",
+      "tags": [
+        "dragon",
+        "roll-dice",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held card that gives the holder 3 roll attempts when battling the DRAGON.",
+      "asset": "cards/102.svg"
+    },
+    {
+      "id": 103,
+      "deck": "B",
+      "title": "Friendly Swap!",
+      "sections": [
+        "Swap places on the board with the player closest to you."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-player"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer finds the nearest pawn and swaps positions (ask the player to break ties).",
+      "asset": "cards/103.svg"
+    },
+    {
+      "id": 104,
+      "deck": "B",
+      "title": "Safe Isn’t Safe!",
+      "sections": [
+        "Send any player on a SAFE spot head first into the NEBULA.",
+        "If they have any BONUS CARDS, take them too! Show no mercy!",
+        "P.S. You are eternally hated now."
+      ],
+      "art": "People being sucked into a swirling NEBULA vortex.",
+      "tags": [
+        "target-player",
+        "nebula",
+        "steal",
+        "bonus-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks someone on a SAFE spot; computer sends them to the NEBULA and transfers their bonus cards.",
+      "asset": "cards/104.svg"
+    },
+    {
+      "id": 105,
+      "deck": "B",
+      "title": "Your Rules!",
+      "sections": [
+        "Make up any rule for just 1 turn.",
+        "But remember, you can’t just do anything you want. If the rule you make up is too ridiculous, the other players can vote against it and send you back to START for trying to cheat the system.",
+        "Be creative (evil), it’s more fun."
+      ],
+      "art": null,
+      "tags": [
+        "speaking",
+        "vote",
+        "start",
+        "chat-adaptable"
+      ],
+      "online": "chat",
+      "onlineNote": "Player types a custom rule into a prompt; others vote in-game to accept it or send the author back to START, and players enforce the rule themselves for 1 turn.",
+      "asset": "cards/105.svg"
+    },
+    {
+      "id": 106,
+      "deck": "B",
+      "title": "Cannonball!",
+      "sections": [
+        "Fire the CANNON twice!",
+        "Spin the SPINNER to use the CANNON. Any players on the same color spot as the arrow are blasted back 3 spaces.",
+        "If you are personally hit by the CANNON, go +3 spaces instead."
+      ],
+      "art": null,
+      "tags": [
+        "spinner",
+        "spinner-color",
+        "target-color",
+        "move"
+      ],
+      "online": "as-is",
+      "onlineNote": "Computer spins twice and moves players on the chosen color back 3 (the card player +3 instead).",
+      "asset": "cards/106.svg"
+    },
+    {
+      "id": 107,
+      "deck": "B",
+      "title": "Reverse Reverse!",
+      "sections": [
+        "Use this card to counter any attack, BONUS or ACTION CARDS used against you and reverse the effect.",
+        "Send back whatever evil deed comes your way, and let them enjoy it instead."
+      ],
+      "art": null,
+      "tags": [
+        "keep-card",
+        "bonus-card",
+        "target-player"
+      ],
+      "online": "as-is",
+      "onlineNote": "Held reaction card; when targeted the game offers to redirect the effect onto the attacker.",
+      "asset": "cards/107.svg"
+    },
+    {
+      "id": 108,
+      "deck": "B",
+      "title": "Star Power!",
+      "sections": [
+        "Warp to any star on the board.",
+        "But be warned! The next time you roll a 3 at any time, you are ejected into space and gobbled up by the NEBULA.",
+        "Hold onto this card to remind you of your impending doom."
+      ],
+      "art": null,
+      "tags": [
+        "move",
+        "target-tile",
+        "roll-dice",
+        "nebula",
+        "keep-card"
+      ],
+      "online": "as-is",
+      "onlineNote": "Player picks a star tile to warp to; the card stays in hand and the game sends them to the NEBULA on their next roll of 3.",
+      "asset": "cards/108.svg"
+    }
+  ]
+}

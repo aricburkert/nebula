@@ -1,0 +1,14 @@
+{
+  "spinner": "standard",
+  "notes": "8 equal segments, clockwise from 12 o'clock, transcribed from spinner/Spinner Front.svg. Cards use either the segment's action or its color dot, never both at once. The 'closest spot' segment shows all three colors; when a card asks for a color, that segment needs a rule (see open questions).",
+  "segments": [
+    {"action": "bonus-card",   "text": "COLLECT A BONUS CARD",                          "color": "blue"},
+    {"action": "nebula",       "text": "GO TO THE NEBULA FOR 1 TURN",                    "color": "green"},
+    {"action": "bonus-card",   "text": "COLLECT A BONUS CARD",                          "color": "red"},
+    {"action": "action-card",  "text": "COLLECT AN ACTION CARD",                         "color": "blue"},
+    {"action": "roll-2-dice",  "text": "ROLL 2 DICE — GO FORWARD THAT AMOUNT",           "color": "green"},
+    {"action": "dragon-fight", "text": "GO TO THE DRAGON AND FIGHT!",                    "color": "red"},
+    {"action": "duel",         "text": "DUEL A PLAYER — WINNER GOES +5, LOSER GOES -1",  "color": "green"},
+    {"action": "closest-spot", "text": "MOVE TO THE CLOSEST RED, BLUE, OR GREEN SPOT",   "color": ["red","blue","green"]}
+  ]
+}
