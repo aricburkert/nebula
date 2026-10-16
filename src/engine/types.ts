@@ -90,6 +90,19 @@ export interface LogEntry {
   spin?: number;
 }
 
+/** A pawn changing place, recorded so screens can animate it. Not part of the rules. */
+export interface Motion {
+  n: number;
+  /** The last log entry's n when it happened, to order it among rolls, spins and cards. */
+  after: number;
+  player: string;
+  from: Pos;
+  to: Pos;
+  /** walk: stepped through `path`; jump: sent straight there; nebula/unnebula: into or out of the NEBULA. */
+  how: "walk" | "jump" | "nebula" | "unnebula" | "finish";
+  path?: string[];
+}
+
 export interface Settings {
   videoCall: boolean;
 }
@@ -121,6 +134,8 @@ export interface GameState {
   lastSpin: { player: string; segment: number } | null;
   pending: Prompt | null;
   log: LogEntry[];
+  /** Recent pawn moves, newest last. */
+  motions: Motion[];
   winner: string | null;
   settings: Settings;
 }
