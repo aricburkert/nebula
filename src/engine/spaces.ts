@@ -23,6 +23,7 @@ export async function resolveSpace(ctx: Ctx, pid: string, depth = 0): Promise<vo
   const g = ctx.game;
   const p = g.player(pid);
   if (p.pos.kind !== "space" || depth > 3) return;
+  g.markResolved(pid, p.pos.id);
   const sp = space(g.board, p.pos.id) as ReturnType<typeof space> & { effect?: SpaceEffect };
   const name = p.name;
   switch (sp.type) {
@@ -89,6 +90,7 @@ export async function resolveSpace(ctx: Ctx, pid: string, depth = 0): Promise<vo
 export async function dragonFight(ctx: Ctx, pid: string) {
   const g = ctx.game;
   const p = g.player(pid);
+  if (p.pos.kind === "space") g.markResolved(pid, p.pos.id);
   let chances = 1;
   if (p.hand.includes(102)) {
     const use = await g.choose(pid, "Use Dragon Scales! for 3 chances to defeat the DRAGON?", [

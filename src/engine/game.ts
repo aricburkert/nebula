@@ -76,6 +76,8 @@ export class Game {
   private watcherSeq = 0;
   private watcherDefs = new Map<number, WatcherDef>();
   private movedThisTurn = new Set<string>();
+  /** Space each player last had resolved since they last moved, so a space never resolves twice in a row. */
+  private resolvedAt = new Map<string, string>();
   private loopPromise: Promise<void> | null = null;
   /** Set when an engine error escaped a card; surfaced in the log. */
   errors: string[] = [];
@@ -292,6 +294,7 @@ export class Game {
           this.discardFromHand(p, 101);
           this.leaveNebula(p);
           this.log(`${p.name} used Freedom! and escaped the NEBULA.`, { player: p.id, card: { id: 101, deck: "B" } });
+          await this.nebulaExitBonus(p);
         }
       }
       if ((p.pos as Pos).kind === "nebula") {
@@ -299,6 +302,7 @@ export class Game {
         if (p.nebulaTurns === 0) {
           this.leaveNebula(p);
           this.log(`${p.name} drifts in the NEBULA for a turn, then crawls out.`, { player: p.id });
+          await this.nebulaExitBonus(p);
         } else {
           this.log(`${p.name} is still stuck in the NEBULA (${p.nebulaTurns} more).`, { player: p.id });
         }
@@ -341,7 +345,7 @@ export class Game {
 
     await this.drawAction(p.id);
     if (this.state.winner) return;
-    if (this.movedThisTurn.has(p.id) && p.pos.kind === "space") {
+    if (this.movedThisTurn.has(p.id) && p.pos.kind === "space" && this.resolvedAt.get(p.id) !== p.pos.id) {
       await resolveSpace(this.ctx(p.id, 0), p.id);
     }
   }
@@ -529,6 +533,7 @@ export class Game {
   async place(pid: string, pos: Pos, opts: { silent?: boolean } = {}) {
     const p = this.player(pid);
     p.pos = pos;
+    this.resolvedAt.delete(pid);
     if (pos.kind === "space") {
       const sp = space(this.board, pos.id);
       if (sp.path) p.branch = sp.path;
@@ -552,12 +557,24 @@ export class Game {
     }
   }
 
+  markResolved(pid: string, spaceId: string) {
+    this.resolvedAt.set(pid, spaceId);
+  }
+
   sendToNebula(pid: string, turns: number) {
     const p = this.player(pid);
     p.pos = { kind: "nebula" };
     p.nebulaTurns = Math.max(p.nebulaTurns, turns);
     this.movedThisTurn.add(pid);
     this.log(`${p.name} got sucked into the NEBULA for ${turns} turn${turns === 1 ? "" : "s"}!`, { player: pid });
+  }
+
+  /** Card 71 lets a player go +5 when they get out of the NEBULA. */
+  private async nebulaExitBonus(p: PlayerState) {
+    const bonus = p.flags.nebulaExitBonus;
+    if (typeof bonus !== "number") return;
+    delete p.flags.nebulaExitBonus;
+    await this.move(p.id, bonus);
   }
 
   leaveNebula(p: PlayerState) {
