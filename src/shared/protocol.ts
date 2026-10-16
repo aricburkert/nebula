@@ -23,6 +23,8 @@ export interface LobbyPlayer {
   name: string;
   pawn: string;
   connected: boolean;
+  /** A computer player the host added. */
+  bot?: boolean;
 }
 
 export interface RoomInfo {
@@ -46,6 +48,8 @@ export type ClientMsg =
   | { t: "join"; name: string; pawn: string }
   | { t: "pawn"; pawn: string }
   | { t: "settings"; videoCall: boolean }
+  | { t: "addBot" }
+  | { t: "removeBot"; player: string }
   | { t: "start" }
   | { t: "answer"; promptId: number; answer: Answer }
   | { t: "gotcha"; target: string; card: number; reason: string }

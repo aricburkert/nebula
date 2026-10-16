@@ -10,6 +10,7 @@ interface Member {
   name: string;
   pawn: string;
   token: string;
+  bot?: boolean;
 }
 
 interface Meta {
@@ -27,6 +28,8 @@ interface Meta {
 const VOTE_TIMEOUT_MS = 120_000;
 const ABSENT_BOT_MS = 20_000;
 const CHAT_KEEP = 100;
+const BOT_THINK_MS = 1200;
+const BOT_NAMES = ["Robo Rita", "Beep Boop Bob", "Sparky", "Unit 42", "Captain Chip", "Hal 9001", "Gizmo", "Toaster"];
 
 /** One game room. Holds the lobby, the chat and the authoritative game, rebuilt from its input log after a restart. */
 export class Room extends DurableObject {
@@ -108,7 +111,7 @@ export class Room extends DurableObject {
     const me = conn.player;
     switch (msg.t) {
       case "hello": {
-        const m = msg.token ? this.meta.members.find((x) => x.token === msg.token) : undefined;
+        const m = msg.token ? this.meta.members.find((x) => !x.bot && x.token === msg.token) : undefined;
         conn.player = m?.id ?? null;
         this.send(ws, { t: "welcome", you: conn.player });
         this.send(ws, { t: "room", room: this.roomInfo() });
@@ -148,6 +151,24 @@ export class Room extends DurableObject {
       case "settings": {
         if (me !== this.meta.host || this.meta.phase !== "lobby") return;
         this.meta.settings = { videoCall: !!msg.videoCall };
+        await this.saveMeta();
+        this.broadcastRoom();
+        return;
+      }
+      case "addBot": {
+        if (me !== this.meta.host || this.meta.phase !== "lobby") return;
+        if (this.meta.members.length >= MAX_PLAYERS) return this.error(ws, "This room is full.");
+        const pawns = PAWNS.filter((p) => !this.meta.members.some((m) => m.pawn === p.id));
+        const name = BOT_NAMES.find((n) => !this.meta.members.some((m) => m.name === n)) ?? `Bot ${this.meta.members.length + 1}`;
+        const pawn = pawns[Math.floor(Math.random() * pawns.length)];
+        this.meta.members.push({ id: crypto.randomUUID().slice(0, 8), name, pawn: pawn.id, token: "", bot: true });
+        await this.saveMeta();
+        this.broadcastRoom();
+        return;
+      }
+      case "removeBot": {
+        if (me !== this.meta.host || this.meta.phase !== "lobby") return;
+        this.meta.members = this.meta.members.filter((m) => !(m.bot && m.id === msg.player));
         await this.saveMeta();
         this.broadcastRoom();
         return;
@@ -263,9 +284,9 @@ export class Room extends DurableObject {
     this.schedule();
   }
 
-  private async botMove(note?: string) {
+  private async botMove(note?: string, only?: Set<string>) {
     if (!this.game) return;
-    const input = botInput(this.game, new Rng((this.meta.config?.seed ?? 1) ^ (this.inputs.length * 2654435761)));
+    const input = botInput(this.game, new Rng((this.meta.config?.seed ?? 1) ^ (this.inputs.length * 2654435761)), only);
     if (!input) return;
     if (note) {
       const message: ChatMessage = { id: ++this.meta.chatSeq, player: null, name: "Nebula", text: note, at: Date.now() };
@@ -293,8 +314,16 @@ export class Room extends DurableObject {
         setTimeout(() => this.serialize(() => (stillPending() ? this.submit({ promptId: id, player: "system", timeout: true }) : undefined)), VOTE_TIMEOUT_MS),
       );
     }
+    const bots = new Set(this.meta.members.filter((m) => m.bot).map((m) => m.id));
+    const waiting = promptPlayers(p);
+    if (waiting.some((pl) => bots.has(pl))) {
+      // Computer players answer after a short pause so people can follow along; in a race they need time to "add up".
+      const delay = p.kind === "race" ? 3000 + Math.random() * 4000 : p.kind === "timer" ? Math.min(p.seconds * 1000, 4000) : BOT_THINK_MS;
+      this.timers.push(setTimeout(() => this.serialize(() => (stillPending() ? this.botMove(undefined, bots) : undefined)), delay));
+    }
     const online = new Set([...this.sockets.values()].map((c) => c.player).filter(Boolean));
-    if (promptPlayers(p).every((pl) => !online.has(pl))) {
+    const humans = waiting.filter((pl) => !bots.has(pl));
+    if (humans.length && humans.every((pl) => !online.has(pl))) {
       this.timers.push(setTimeout(() => this.serialize(() => (stillPending() ? this.botMove() : undefined)), ABSENT_BOT_MS));
     }
   }
@@ -312,7 +341,7 @@ export class Room extends DurableObject {
       host: this.meta.host,
       phase: this.meta.phase,
       settings: this.meta.settings,
-      players: this.meta.members.map((m) => ({ id: m.id, name: m.name, pawn: m.pawn, connected: online.has(m.id) })),
+      players: this.meta.members.map((m) => ({ id: m.id, name: m.name, pawn: m.pawn, connected: !!m.bot || online.has(m.id), bot: m.bot })),
     };
   }
 

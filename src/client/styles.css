@@ -652,3 +652,9 @@ input:focus {
   background: #ff9f1a;
   bottom: 70px;
 }
+.lobby-players + .btn {
+  margin-top: 12px;
+}
+.lobby-players li .btn.tiny {
+  margin-left: auto;
+}
