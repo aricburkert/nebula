@@ -22,6 +22,7 @@ export interface CardInfo {
   id: number;
   deck: "A" | "B";
   title: string | null;
+  sections: string[];
   online: "as-is" | "chat" | "video-call" | "remove";
 }
 
@@ -29,13 +30,23 @@ export const CARDS: CardInfo[] = (cardsData as { cards: CardInfo[] }).cards.map(
   id: c.id,
   deck: c.deck,
   title: c.title,
+  sections: c.sections,
   online: c.online,
 }));
 export const CARD_BY_ID = new Map(CARDS.map((c) => [c.id, c]));
 
+/** The card's printed title, or for untitled cards a short quote of its first line. */
 export function cardName(id: number): string {
   const c = CARD_BY_ID.get(id);
-  return c?.title ?? `${c?.deck === "B" ? "Bonus" : "Action"} card #${id}`;
+  if (!c) return `card #${id}`;
+  if (c.title) return c.title;
+  const first = (c.sections[0] ?? "").split(/(?<=[.!?])\s/)[0];
+  return `“${first.length > 48 ? first.slice(0, 46).trimEnd() + "…" : first}”`;
+}
+
+/** Adds a full stop unless the text already ends in punctuation. */
+function stop(text: string): string {
+  return /[.!?…”]$/.test(text) ? text : `${text}.`;
 }
 
 export interface GameConfig {
@@ -358,7 +369,7 @@ export class Game {
     }
     const p = this.player(pid);
     this.state.active = { card, deck: "A", player: pid };
-    this.log(`${p.name} drew ${cardName(card)}.`, { player: pid, card: { id: card, deck: "A" } });
+    this.log(stop(`${p.name} drew ${cardName(card)}`), { player: pid, card: { id: card, deck: "A" } });
     const script = CARD_SCRIPTS[card];
     let keep = false;
     if (script) {
@@ -382,7 +393,7 @@ export class Game {
     const def = BONUS_CARDS[card];
     this.discardFromHand(p, card);
     this.state.active = { card, deck: "B", player: p.id };
-    this.log(`${p.name} played ${cardName(card)}!`, { player: p.id, card: { id: card, deck: "B" } });
+    this.log(stop(`${p.name} played ${cardName(card)}`), { player: p.id, card: { id: card, deck: "B" } });
     const keep = def ? (await def.play(this.ctx(p.id, card))) === "keep" : false;
     if (keep) p.hand.push(card);
   }
@@ -548,7 +559,7 @@ export class Game {
     const id = p.pos.id;
     for (const trap of this.state.traps.filter((t) => t.space === id && t.owner !== pid)) {
       const def = BONUS_CARDS[trap.card];
-      this.log(`${p.name} landed on ${this.player(trap.owner).name}'s ${cardName(trap.card)}!`, {
+      this.log(stop(`${p.name} landed on ${this.player(trap.owner).name}'s ${cardName(trap.card)}`), {
         player: pid,
         card: { id: trap.card, deck: "B" },
       });
@@ -1086,7 +1097,7 @@ export class Ctx {
   }
   addTrap(spaceId: string) {
     this.game.state.traps.push({ space: spaceId, card: this.card, owner: this.me });
-    this.game.log(`${this.name(this.me)} set ${cardName(this.card)} on ${describeSpace(this.board, spaceId)}.`, { player: this.me });
+    this.game.log(`${this.name(this.me)} set a ${cardName(this.card).replace(/!$/, "")} on ${describeSpace(this.board, spaceId)}.`, { player: this.me });
   }
 
   /**
@@ -1112,7 +1123,7 @@ export class Ctx {
       const c = "card" in a ? a.card : null;
       if (c !== null) {
         this.game.discardFromHand(t, c);
-        this.game.log(`${t.name} played ${cardName(c)}!`, { player: target, card: { id: c, deck: "B" } });
+        this.game.log(stop(`${t.name} played ${cardName(c)}`), { player: target, card: { id: c, deck: "B" } });
         if (c === 107) {
           await apply(this.me);
         }

@@ -11,10 +11,7 @@ export interface CardText {
 const CARDS = (cardsData as { cards: CardText[] }).cards;
 export const CARD_TEXT = new Map(CARDS.map((c) => [c.id, c]));
 
-export function cardTitle(id: number): string {
-  const c = CARD_TEXT.get(id);
-  return c?.title ?? `${c?.deck === "B" ? "Bonus" : "Action"} card #${id}`;
-}
+export { cardName as cardTitle } from "../engine/game";
 
 export function cardAlt(id: number): string {
   const c = CARD_TEXT.get(id);
