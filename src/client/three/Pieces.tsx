@@ -233,24 +233,14 @@ function Vortex() {
         depthWrite: false,
         uniforms: { uMap: { value: null }, uTime: { value: 0 }, uAspect: { value: bh / bw } },
         vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+        // The printed art as it is, with a faint glow rippling outward from the middle.
         fragmentShader: `
           varying vec2 vUv; uniform sampler2D uMap; uniform float uTime; uniform float uAspect;
           void main(){
-            vec2 c = vec2(0.5, 0.52);
-            vec2 q = (vUv - c) * vec2(1.0, uAspect);
-            float r = length(q);
-            float a = -uTime * (0.9 / (0.12 + r * 3.0));
-            float s = sin(a), co = cos(a);
-            vec2 rq = mat2(co, -s, s, co) * q;
-            vec2 uv = c + rq / vec2(1.0, uAspect);
-            vec4 col = texture2D(uMap, uv);
-            // keep the printed outline still so the edge stays put; swirl the inside
-            vec4 still = texture2D(uMap, vUv);
-            float inner = smoothstep(0.42, 0.18, r);
-            vec4 o = mix(still, col, inner);
-            o.a = still.a;
-            float glow = 0.25 + 0.15 * sin(uTime * 2.0 + r * 20.0);
-            o.rgb += o.rgb * glow * inner;
+            vec4 o = texture2D(uMap, vUv);
+            float r = length((vUv - vec2(0.5, 0.52)) * vec2(1.0, uAspect));
+            float inner = smoothstep(0.42, 0.1, r);
+            o.rgb *= 1.0 + inner * (0.05 + 0.05 * sin(uTime * 1.4 - r * 14.0));
             gl_FragColor = o;
           }`,
       }),
@@ -259,7 +249,7 @@ function Vortex() {
   const light = useRef<THREE.PointLight>(null);
   useFrame(({ clock }, dt) => {
     mat.uniforms.uTime.value += dt;
-    if (light.current) light.current.intensity = 14 + Math.sin(clock.elapsedTime * 2.2) * 5;
+    if (light.current) light.current.intensity = 5 + Math.sin(clock.elapsedTime * 1.4) * 1.5;
   });
   if (tex && mat.uniforms.uMap.value !== tex) mat.uniforms.uMap.value = tex;
   // Sits on top of the raised path, like the printed art that spills over the NEBULA space.
