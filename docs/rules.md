@@ -1,6 +1,6 @@
 # The Nebula from Hell: rules spec for the online version
 
-This is the rulebook the online game will implement. It is built from the Kickstarter "How to play" page, the Standard Edition board, the spinner and all 108 cards. Anything marked **Open question** needs aric's answer before it is coded; the default in brackets is what gets built until then.
+This is the rulebook the online game will implement. It is built from the Kickstarter "How to play" page, the Standard Edition board, the spinner and all 108 cards. Rule questions were settled with aric on 2026-10-16.
 
 ## At a glance
 
@@ -13,7 +13,7 @@ This is the rulebook the online game will implement. It is built from the Kickst
 1. Everyone picks a pawn character (12 to choose from, each pawn once).
 2. All pawns start on START, which is off the path before space `s1`.
 3. Shuffle the Action deck and the Bonus deck separately.
-4. Pick a first player. **Open question:** how is the first player chosen? [Highest roll of one die goes first; play goes clockwise, i.e. in seat order.]
+4. The first player is chosen by the highest roll of one die; play goes in seat order.
 5. Room setting **"We're on a video call"**: when on, video-call cards stay in the deck; when off, they are removed before shuffling (see `docs/card-review.md`).
 
 ## Your turn
@@ -26,7 +26,7 @@ This is the rulebook the online game will implement. It is built from the Kickst
 
 Moving backwards follows the path in reverse. You cannot move past the GRAPPLING HOOK: any forward movement that would pass it stops on it.
 
-**Open question:** do you resolve every space you *pass*, or only the one you *land on*? [Only the space you land on.]
+You resolve only the space you **land on**, not the spaces you pass.
 
 ## Space colors
 
@@ -53,10 +53,10 @@ Most spaces have a red, blue or green dot. **Your color is the color of the spac
 | Cannon! (`c9`) | Spin the spinner. Everyone on the color it lands on goes back 3. |
 | Grappling Hook (`c15`) | You cannot go farther. From now on you skip the Action card and roll a 1 to win. |
 
-**Open questions:**
-- When you land on a "roll to…" space (Hippo Bee, Star, Troll, Canoe, Dragon), do you roll once right away, and if you fail do you simply stay? [Roll once immediately; failing with no listed penalty means you stay.]
-- If you win the Dragon Fight or Troll Battle, do you get anything besides staying put? [No.]
-- The Nebula exit: the board says "EXIT NEBULA HERE" next to the Nebula space. [When you leave the NEBULA you are placed on the Nebula space `b7` and continue from there toward the Dragon Battle Recovery Zone.]
+Decided:
+- When you land on a "roll to…" space (Hippo Bee, Star, Troll, Canoe, Dragon) you roll once right away. Failing with no listed penalty means you stay.
+- Winning the Dragon Fight or Troll Battle means you stay put; there is no extra reward.
+- When you leave the NEBULA you are placed on the Nebula space `b7` and continue from there toward the Dragon Battle Recovery Zone.
 
 ## The Nebula
 
@@ -69,9 +69,9 @@ Eight segments. A card or space tells you which part of the spinner to use, **ne
 - **Action**: do what the segment says (Bonus card x2, Nebula for 1 turn, Action card, Roll 2 dice and go forward, Go to the Dragon and fight, Duel a player, Move to the closest red/blue/green spot).
 - **Color**: only the colored dot matters (used by the CANNON and some cards).
 
-**Open question:** the "Move to the closest red, blue or green spot" segment shows all three dots. When a color spin lands there, what happens? [Every color is hit.]
+The "Move to the closest red, blue or green spot" segment shows all three dots: when a color spin lands there, every color is hit.
 
-**Open question:** "Duel a player". [The spinner's owner picks an opponent; both roll one die; higher roll wins +5, loser -1; ties re-roll.]
+Duel a player: the spinner's owner picks an opponent, both roll one die, the higher roll wins +5 and the loser goes -1. Ties re-roll.
 
 ## Bonus cards
 
@@ -79,9 +79,9 @@ Bonus cards go into your hand (hidden from other players) and are played when th
 
 Online, every effect that could be answered by a reaction card pauses for a few seconds and shows a "Respond?" prompt to players who hold a matching card. If nobody responds, the effect happens.
 
-**Traps** (84 Spider Monkey, 93 Spring, 98 Nebula) are placed on a space and stay until triggered or removed by card 88. **Open question:** does a trap trigger once and then get discarded? [Yes, once.] Traps cannot be placed on FINISH (two of them say so).
+**Traps** (84 Spider Monkey, 93 Spring, 98 Nebula) are placed on a space and **stay there**, catching everyone who lands on it, until card 88 Trap Removal removes them. Traps cannot be placed on FINISH (two of them say so).
 
-**Open question:** is there a hand limit for Bonus cards? [No limit.]
+There is no hand limit for Bonus cards.
 
 ## Decks
 
@@ -91,7 +91,7 @@ When a deck runs out, shuffle its discard pile to make a new one. Cards returned
 
 The first player to reach FINISH wins. On the Standard board that means rolling a 1 while on the Grappling Hook. Card 79 "You Win! Well Maybe?" offers another way out.
 
-**Open question:** can any movement card carry you onto FINISH directly, skipping the Grappling Hook? [No, the Grappling Hook always stops you.]
+No card can carry you past the Grappling Hook: you always have to stop there and roll a 1.
 
 ## Video-call and chat cards
 
