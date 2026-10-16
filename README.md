@@ -44,4 +44,6 @@ It's a single Worker with static assets and one Durable Object; `wrangler.jsonc`
 2. Build command: `npm run build`. Deploy command: `npx wrangler deploy`. Root directory: `/`.
 3. Save and deploy. Every push to `main` publishes again.
 
+If pushes stop publishing, check **Settings → Build** on the Worker. A banner saying the project is disconnected from your Git account means the Cloudflare GitHub app lost access. Click **Manage**, allow the repo, and refresh.
+
 No secrets or environment variables are needed. The Durable Object migration (`v1`, class `Room`) is applied on the first deploy.
