@@ -92,11 +92,22 @@ export function Lobby({ conn, room }: { conn: RoomConnection; room: RoomInfo }) 
               {p.name}
               {p.id === room.host && <span className="tag">host</span>}
               {p.id === conn.you && <span className="tag">you</span>}
+              {p.bot && <span className="tag">computer</span>}
               {!p.connected && <span className="tag">offline</span>}
+              {p.bot && isHost && room.phase === "lobby" && (
+                <button className="btn tiny secondary" onClick={() => conn.send({ t: "removeBot", player: p.id })} aria-label={`Remove ${p.name}`}>
+                  Remove
+                </button>
+              )}
             </li>
           ))}
           {room.players.length === 0 && <li className="muted">Nobody yet.</li>}
         </ul>
+        {isHost && room.phase === "lobby" && room.players.length < MAX_PLAYERS && (
+          <button className="btn secondary" onClick={() => conn.send({ t: "addBot" })}>
+            Add a computer player
+          </button>
+        )}
       </section>
 
       <section className="panel">

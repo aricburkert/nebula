@@ -152,6 +152,7 @@ function Spinner({ game, names }: { game: GameView; names: Map<string, string> }
 
 function Players({ conn, game, room }: { conn: RoomConnection; game: GameView; room: RoomInfo }) {
   const online = new Map(room.players.map((p) => [p.id, p.connected]));
+  const bots = new Set(room.players.filter((p) => p.bot).map((p) => p.id));
   return (
     <section className="panel players">
       {game.players.map((p) => {
@@ -173,6 +174,7 @@ function Players({ conn, game, room }: { conn: RoomConnection; game: GameView; r
               <div>
                 <strong>{p.name}</strong>
                 {p.id === conn.you && <span className="tag">you</span>}
+                {bots.has(p.id) && <span className="tag">computer</span>}
                 {!online.get(p.id) && <span className="tag">offline</span>}
               </div>
               <div className="small muted">

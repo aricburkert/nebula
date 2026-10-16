@@ -56,3 +56,28 @@ describe("random games", () => {
     });
   }
 });
+
+describe("computer players", () => {
+  for (let seed = 1; seed <= 10; seed++) {
+    it(`seed ${seed}: bots only ever answer for themselves`, async () => {
+      const n = 3 + (seed % 4);
+      const g = new Game({
+        seed,
+        settings: { videoCall: seed % 2 === 0 },
+        players: Array.from({ length: n }, (_, i) => ({ id: `p${i}`, name: `P${i}`, pawn: PAWNS[i] })),
+      });
+      await g.start();
+      const bots = new Set(Array.from({ length: n - 1 }, (_, i) => `p${i + 1}`));
+      const rng = new Rng(seed);
+      for (let steps = 0; g.state.phase === "playing" && steps < 20000; steps++) {
+        const botMove = botInput(g, rng, bots);
+        if (botMove) expect(bots.has(botMove.player)).toBe(true);
+        const input = botMove ?? botInput(g, rng);
+        if (!input) break;
+        const r = await g.submit(input);
+        if (!r.ok) throw new Error(`Input rejected: ${r.error} ${JSON.stringify(g.state.pending)}`);
+      }
+      expect(g.errors).toEqual([]);
+    });
+  }
+});
